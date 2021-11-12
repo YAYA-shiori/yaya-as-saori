@@ -1,0 +1,73 @@
+// Load, Unload はいずれか片方だけでも、両方ともなくても構わない
+
+// Sample.～のいずれかの関数が初めて呼ばれる直前に実行される
+// このモジュール内だと、MySampleか、AnotherSample
+// のどちらかが呼ばれた最初の時のみ
+Sample.Load
+{
+	// テスト用の変数
+	Sample.test = "super"
+}
+
+// SAORIのアンロード時に自動的に呼ばれる
+Sample.Unload
+{
+	// 変数が保存されないように削除する
+	ERASEVAR("Sample.test")
+}
+
+// 里々で、aya5.dllをayaとして登録しているなら、
+// （aya, Sample.MySamle）として呼び出せる
+Sample.MySample
+{
+	RES.RESULT = "Hello, %(Sample.test) world!"
+}
+
+// リクエストヘッダから得られるフィールド名取得と、返す値を設定するサンプル
+// 里々で、aya5.dllをayaとして登録しているなら、
+// （aya, Sample.AnotherSamle, someword）として呼び出せる
+// 注意：全てのREQ.～変数があるとは限らない（リクエストヘッダに依存）
+// ここには記述しませんでしたが、REQ.HEADERに、リクエストヘッダが格納されています。
+Sample.AnotherSample
+{
+	// 引数が足りないなど、不正時は-1を返す（400 Bad Request）
+	if ARRAYSIZE(REQ.ARGS) < 1 {
+		// 例外発生時には、LOGGINGを行うことを推奨します。
+		LOGGING("Sample.AnotherSample: 引数が不足しています")
+		-1
+		return
+	}
+	RES.RESULT = "Hello, %(Sample.test) %(REQ.ARGUMENT1) world!"
+	// e.g. EXECUTE
+	RES.VALUE0 = REQ.COMMAND
+	// e.g. SAORI/1.0
+	RES.VALUE1 = REQ.PROTOCOL
+	// e.g. 1.0
+	RES.VALUE2 = REQ.VERSION
+	// Charset
+	RES.VALUE3 = REQ.CHARSET
+	// Sender
+	RES.VALUE4 = REQ.SENDER
+	// SecurityLevel
+	RES.VALUE5 = REQ.SECURITYLEVEL
+	// Argument0（内容は、この関数名: Sample.AnotherSample）
+	RES.VALUE6 = REQ.ARGUMENT0
+	// この関数に渡された最初の引数（REQ.ARGUMENT1と同じ）
+	RES.VALUE7 = REQ.ARGS[0]
+}
+
+// その他の内部変数
+// AYASAORI.PATH:    aya5.dllがあるディレクトリのパス
+// AYASAORI.VERSION: AYASAORIのプロトコルバージョン
+// AYASAORI.CHARSET: AYASAORIの文字コード
+// AYASAORI.SENDER:  AYASAORIの送信者名
+// 文の特性上全ての変数は書き換え可能ですが、
+// これらは読み取り専用と考えてください。
+
+// また
+// RES.VERSION, RES.CHARSET, RES.SENDER に代入することで、レスポンスヘッダの
+// それぞれの値を変更することができます。
+// また、RES.STATUS に globaldefine されている
+// STATUS_OK, STATUS_NO_CONTENT, STATUS_BAD_REQUEST, STATUS_INTERNAL_SERVER_ERROR
+// のいずれかを代入することで、レスポンスのステータスを変更することができます
+// （変更は一度のレスポンス内でだけ有効なので、必要がある場合はリクエスト毎に代入してください）

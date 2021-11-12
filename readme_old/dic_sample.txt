@@ -1,0 +1,18 @@
+＃このふぁいるは、sample.aymテスト用の里々辞書です。
+＃sample.aymを使用する場合は、aya5.txt内の
+＃//dic, sample.aymという行の//を消してください。
+＃このファイルはsatori.dllと同じフォルダに置いてください。
+
+＊1つつかれ
+（aya, Sample.MySample）
+
+＊1つつかれ
+（aya, Sample.AnotherSample, monkey's）
+（Ｓ０）
+（Ｓ１）
+（Ｓ２）
+（Ｓ３）
+（Ｓ４）
+（Ｓ５）
+（Ｓ６）
+（Ｓ７）
