@@ -1776,3 +1776,14 @@ append_runtime_dic
 
 	RES.RESULT = APPEND_RUNTIME_DIC(REQ.ARGS[0])
 }
+
+sleep
+{
+	if ARRAYSIZE(REQ.ARGS) < 1 {
+		LOGGING("sleep: 引数が不足しています")
+		-1
+		return
+	}
+
+	RES.RESULT = SLEEP(TOINT(REQ.ARGS[0]))
+}

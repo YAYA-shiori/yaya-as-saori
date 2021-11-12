@@ -62,6 +62,11 @@ postic　http://navy.nm.land.to/post/
 
 
 ■更新履歴
+2021.11.12　builtins.aymにsleepを追加
+　　　　　　yaya.dllを Tc564-1に変更
+　　　　　　ファイルの文字コードをShift_JISからUTF-8に変更
+　　　　　　※配布場所をGitHubに移行 以降の更新履歴はコミットログを参照
+　　　　　　[編集者：Don]
 2021.10.08　builtins.aymにisevaluableとsettamahwndとisglobaldefineとsetglobaldefineとappend_runtime_dicを追加
 　　　　　　yaya.dllを Tc562-1に変更
 　　　　　　[編集者：Don]
