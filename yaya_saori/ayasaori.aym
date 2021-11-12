@@ -1,12 +1,12 @@
 // https://gist.github.com/nikolat/1007538
-// yaya.dllİ’è
+// yaya.dllè¨­å®š
 #globaldefine AYAINFO_VERSION	0
 #globaldefine AYAINFO_CHARSET	1
 #globaldefine AYAINFO_PATH		2
 
-#define PROTOCOL_VERSION	"1.0"				/* SAORIƒvƒƒgƒRƒ‹ƒo[ƒWƒ‡ƒ“ */
+#define PROTOCOL_VERSION	"1.0"				/* SAORIãƒ—ãƒ­ãƒˆã‚³ãƒ«ãƒãƒ¼ã‚¸ãƒ§ãƒ³ */
 #define PROTOCOL_SENDER		"AYASAORI"			/* Sender */
-#define CRLF	CHR(0xd)+CHR(0xa)				/* ‰üsƒR[ƒh */
+#define CRLF	CHR(0xd)+CHR(0xa)				/* æ”¹è¡Œã‚³ãƒ¼ãƒ‰ */
 
 #define FUNC_UNDEFIND	0
 #define FUNC_USER		1
@@ -18,9 +18,9 @@
 #globaldefine STATUS_INTERNAL_SERVER_ERROR		"500 Internal Server Error"
 
 /**	AYA API load
- *	‰Šú‰»
+ *	åˆæœŸåŒ–
  *
- *	@param	string	_argv[0] ƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒfƒBƒŒƒNƒgƒŠƒpƒX
+ *	@param	string	_argv[0] ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹
  */
 load
 {
@@ -31,7 +31,7 @@ load
 }
 
 /**	AYA API unload
- *	Œãn––
+ *	å¾Œå§‹æœ«
  */
 unload
 {
@@ -40,7 +40,7 @@ unload
 	ERASEVAR("REQ.VERSION")
 	ERASEVAR("REQ.PROTOCOL")
 
-	// ƒfƒXƒgƒ‰ƒNƒ^ƒR[ƒ‹
+	// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚³ãƒ¼ãƒ«
 	foreach AYASAORI.LOADEDCLS; _cls {
 		_func = "%(_cls).Unload"
 		if ISFUNC(_func) {
@@ -57,23 +57,23 @@ unload
 
 
 /**	AYA API request
- *	ƒŠƒNƒGƒXƒgƒwƒbƒ_‚ğ‰ğÍ‚µAw’è‚ÌŠÖ”‚ğŒÄ‚Ño‚µ‚ÄŒ‹‰Ê‚ğƒŒƒXƒ|ƒ“ƒXƒwƒbƒ_‚Æ‚µ‚Ä•Ô‚·
+ *	ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ˜ãƒƒãƒ€ã‚’è§£æã—ã€æŒ‡å®šã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦çµæœã‚’ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ˜ãƒƒãƒ€ã¨ã—ã¦è¿”ã™
  *
- *	@param	string	_argv[0] ƒŠƒNƒGƒXƒgƒwƒbƒ_•¶š—ñ
- *	@return	string	ƒŒƒXƒ|ƒ“ƒXƒwƒbƒ_•¶š—ñ
+ *	@param	string	_argv[0] ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ˜ãƒƒãƒ€æ–‡å­—åˆ—
+ *	@return	string	ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ˜ãƒƒãƒ€æ–‡å­—åˆ—
  */
 request
 {
 	REQ.HEADER = _argv[0]
 	_header    = SPLIT(_argv[0], CRLF)
 
-	// •s³‚Èƒwƒbƒ_
+	// ä¸æ­£ãªãƒ˜ãƒƒãƒ€
 	if ARRAYSIZE(_header) <= 1 {
 		AYASAORI.Response("400 Bad Request")
 		return
 	}
 
-	// ƒŠƒNƒGƒXƒgƒ‰ƒCƒ“‚Ì•ªÍ
+	// ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ©ã‚¤ãƒ³ã®åˆ†æ
 	_requestLine = _header[0]
 	_header[0]   = IARRAY
 	_requestLine = CUTSPACE(_requestLine)
@@ -96,23 +96,23 @@ request
 			_key   = CUTSPACE(_field[0])
 			_value = CUTSPACE(_field[1])
 
-			// •Ï”‚ğƒZƒbƒg‚·‚éB‘å•¶š‚Å“ˆê
-			// Charset, SecurityLevel, Sender, Argument[0..n] ˆÈŠO‚Í–³‚¢‚Í‚¸
+			// å¤‰æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚å¤§æ–‡å­—ã§çµ±ä¸€
+			// Charset, SecurityLevel, Sender, Argument[0..n] ä»¥å¤–ã¯ç„¡ã„ã¯ãš
 			_key = TOUPPER(_key)
 			if _key == "CHARSET" || _key == "SECURITYLEVEL" /
 				|| _key == "SENDER" || RE_MATCH(_key, "ARGUMENT[0-9]+")
 				LETTONAME("REQ.%(_key)", _value)
 		}
 
-		// ƒ†[ƒUŠÖ”‚Ì‚İˆ—‘ÎÛ‚Æ‚·‚é
+		// ãƒ¦ãƒ¼ã‚¶é–¢æ•°ã®ã¿å‡¦ç†å¯¾è±¡ã¨ã™ã‚‹
 		_result = 0
 		if ISFUNC(REQ.ARGUMENT0) == FUNC_USER || ISFUNC(REQ.ARGUMENT0) == FUNC_BUILTIN {
 			REQ.ARGS = IARRAY()
 			_i = 0
 			while 1 {
-				// ƒ‹[ƒv‘€ì‚ÌŠÈˆÕ‰»‚Ì‚½‚ß‚ÉAREQ.ARGS”z—ñ‚ğì‚é
+				// ãƒ«ãƒ¼ãƒ—æ“ä½œã®ç°¡æ˜“åŒ–ã®ãŸã‚ã«ã€REQ.ARGSé…åˆ—ã‚’ä½œã‚‹
 				if ISVAR("REQ.ARGUMENT%(_i)") {
-					// Argument0 ‚Íƒƒ\ƒbƒh(‚Ü‚½‚ÍŠÖ”–¼)‚È‚Ì‚Å”ò‚Î‚·
+					// Argument0 ã¯ãƒ¡ã‚½ãƒƒãƒ‰(ã¾ãŸã¯é–¢æ•°å)ãªã®ã§é£›ã°ã™
 					if _i == 0 {
 						_i++
 						continue
@@ -124,7 +124,7 @@ request
 				}
 			}
 
-			// ƒRƒ“ƒXƒgƒ‰ƒNƒ^ƒR[ƒ‹
+			// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚³ãƒ¼ãƒ«
 			if STRSTR(REQ.ARGUMENT0, ".", 0) != -1 {
 				_tmp = SPLIT(REQ.ARGUMENT0, ".", 2)
 				_cls = _tmp[0]
@@ -134,7 +134,7 @@ request
 				} else {
 					if ASEARCH(_cls, AYASAORI.LOADEDCLS) < 0 {
 						_func = "%(_cls).Load"
-						// ƒ‚ƒWƒ…[ƒ‹ƒ[ƒh‚ÌÀs
+						// ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ­ãƒ¼ãƒ‰ã®å®Ÿè¡Œ
 						if ISFUNC(_func) {
 							_dummy = EVAL(_func)
 						}
@@ -143,7 +143,7 @@ request
 				}
 			}
 
-			// ŠÖ”Às
+			// é–¢æ•°å®Ÿè¡Œ
 			if ISFUNC(REQ.ARGUMENT0) == FUNC_BUILTIN
 				_result = EVAL(TOLOWER(REQ.ARGUMENT0))
 			else
@@ -156,10 +156,10 @@ request
 		if _result == -1 {
 			AYASAORI.Response(STATUS_BAD_REQUEST)
 		} else {
-			// ƒŒƒXƒ|ƒ“ƒX‚Ìì¬
+			// ãƒ¬ã‚¹ãƒãƒ³ã‚¹ã®ä½œæˆ
 			AYASAORI.Response(STATUS_OK)
 		}
-		// •Ï”‚ÌŒãn––
+		// å¤‰æ•°ã®å¾Œå§‹æœ«
 		ERASEVAR("REQ.SECURITYLEVEL")
 		ERASEVAR("REQ.CHARSET")
 		ERASEVAR("REQ.SENDER")
@@ -174,7 +174,7 @@ request
 			_i++
 		}
 	}
-	// –¢’m‚ÌƒŠƒNƒGƒXƒg
+	// æœªçŸ¥ã®ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
 	others
 		AYASAORI.Response(STATUS_BAD_REQUEST)
 		return
@@ -182,11 +182,11 @@ request
 }
 
 
-/**	ƒŒƒXƒ|ƒ“ƒXƒwƒbƒ_‚ğ\’z‚·‚é
+/**	ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ˜ãƒƒãƒ€ã‚’æ§‹ç¯‰ã™ã‚‹
  *
- *	@param	string   _argv[0] ƒXƒe[ƒ^ƒX
+ *	@param	string   _argv[0] ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
  *	@param	string[] _argv[1] Value[0..n]
- *	@return	string   ƒŒƒXƒ|ƒ“ƒXƒwƒbƒ_•¶š—ñ
+ *	@return	string   ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ˜ãƒƒãƒ€æ–‡å­—åˆ—
  */
 AYASAORI.Response
 {

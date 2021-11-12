@@ -1,8 +1,8 @@
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 acos
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("acos: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("acos: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -10,11 +10,11 @@ acos
 	RES.RESULT = ACOS(_req0)
 }
 
-// ˆÊ’uî•ñ‚ÍValue0‚Å•Ô‚é
+// ä½ç½®æƒ…å ±ã¯Value0ã§è¿”ã‚‹
 any
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("any: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("any: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -28,7 +28,7 @@ any
 arraysize
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("arraysize: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("arraysize: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -42,7 +42,7 @@ arraysize
 asearch
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("asearch: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("asearch: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -52,14 +52,14 @@ asearch
 }
 
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 
-// Result‚Í”­Œ©‚µ‚½ŒÂ”
-// Value[0..n]‚ÉŒÂX‚Ì”­Œ©ˆÊ’u
+// Resultã¯ç™ºè¦‹ã—ãŸå€‹æ•°
+// Value[0..n]ã«å€‹ã€…ã®ç™ºè¦‹ä½ç½®
 asearchex
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("asearchex: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("asearchex: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -73,11 +73,11 @@ asearchex
 	}
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 asin
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("asin: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("asin: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -85,11 +85,11 @@ asin
 	RES.RESULT = ASIN(_req0)
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 atan
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("atan: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("atan: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -100,18 +100,18 @@ atan
 binstrtoi
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("binstrtoi: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("binstrtoi: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = BINSTRTOI(REQ.ARGS[0])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 ceil
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("ceil: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("ceil: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -122,7 +122,7 @@ ceil
 charsetlib
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("charsetlib: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("charsetlib: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -132,7 +132,7 @@ charsetlib
 chr
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("chr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("chr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -142,18 +142,18 @@ chr
 chrcode
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("chrcode: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("chrcode: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = CHRCODE(REQ.ARGS[0])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 cos
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cos: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("cos: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -164,18 +164,18 @@ cos
 cutspace
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cutspace: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("cutspace: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = CUTSPACE(REQ.ARGS[0])
 }
 
-// ƒŒƒXƒ|ƒ“ƒXƒwƒbƒ_‚Å‚Ü‚½•¶Žš—ñ‚É–ß‚é‚Ì‚ÅˆÓ–¡‚ª‚È‚¢
+// ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ˜ãƒƒãƒ€ã§ã¾ãŸæ–‡å­—åˆ—ã«æˆ»ã‚‹ã®ã§æ„å‘³ãŒãªã„
 cvint
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvint: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("cvint: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -183,11 +183,11 @@ cvint
 	RES.RESULT = REQ.ARGS[0]
 }
 
-// ƒŒƒXƒ|ƒ“ƒXƒwƒbƒ_‚Å‚Ü‚½•¶Žš—ñ‚É–ß‚é‚Ì‚ÅˆÓ–¡‚ª‚È‚¢
+// ãƒ¬ã‚¹ãƒãƒ³ã‚¹ãƒ˜ãƒƒãƒ€ã§ã¾ãŸæ–‡å­—åˆ—ã«æˆ»ã‚‹ã®ã§æ„å‘³ãŒãªã„
 cvreal
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvreal: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("cvreal: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -195,11 +195,11 @@ cvreal
 	RES.RESULT = REQ.ARGS[0]
 }
 
-// Œ³X•¶Žš—ñ‚È‚Ì‚ÅˆÓ–¡‚ª‚È‚¢
+// å…ƒã€…æ–‡å­—åˆ—ãªã®ã§æ„å‘³ãŒãªã„
 cvstr
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvstr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("cvstr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -210,7 +210,7 @@ cvstr
 erase
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("erase: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("erase: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -220,7 +220,7 @@ erase
 erasevar
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("erasevar: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("erasevar: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -230,7 +230,7 @@ erasevar
 eval
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("eval: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("eval: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -240,7 +240,7 @@ eval
 fcharset
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fcharset: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fcharset: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -250,7 +250,7 @@ fcharset
 fclose
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fclose: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fclose: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -260,7 +260,7 @@ fclose
 fcopy
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fcopy: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fcopy: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -270,7 +270,7 @@ fcopy
 fdel
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fdel: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fdel: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -280,18 +280,18 @@ fdel
 fenum
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fenum: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fenum: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = FENUM(REQ.ARGS[0], REQ.ARGS[1])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 floor
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("floor: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("floor: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -302,7 +302,7 @@ floor
 fmove
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fmove: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fmove: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -312,18 +312,18 @@ fmove
 fopen
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fopen: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fopen: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = FOPEN(REQ.ARGS[0], REQ.ARGS[1])
 }
 
-// ƒtƒ@ƒCƒ‹I’[‚Ü‚Å“Ç‚Þ‚ÆAResult‚ª–³‚­‚È‚èValue0‚ª"EOF"‚É‚È‚é
+// ãƒ•ã‚¡ã‚¤ãƒ«çµ‚ç«¯ã¾ã§èª­ã‚€ã¨ã€ResultãŒç„¡ããªã‚ŠValue0ãŒ"EOF"ã«ãªã‚‹
 fread
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fread: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fread: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -337,7 +337,7 @@ fread
 frename
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("frename: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("frename: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -347,40 +347,40 @@ frename
 fsize
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fsize: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fsize: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = FSIZE(REQ.ARGS[0])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 fwrite
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwrite: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fwrite: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	FWRITE(REQ.ARGS[0],REQ.ARGS[1])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 fwrite2
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwrite2: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fwrite2: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	FWRITE2(REQ.ARGS[0],REQ.ARGS[1])
 }
 
-// ‹°‚ç‚­ˆÓ–¡‚È‚µ
+// æã‚‰ãæ„å‘³ãªã—
 getdelim
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getdelim: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("getdelim: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -390,19 +390,19 @@ getdelim
 		RES.RESULT = GETDELIM(TOSTR(REQ.ARGS))
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 getlasterror
 {
 	RES.RESULT = GETLASTERROR()
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 /**
- *	Value0: •¨—ƒƒ‚ƒŠ‚ÌŽg—p—¦
- *	Value1: •¨—ƒƒ‚ƒŠ—Ê
- *	Value2: ‹ó‚«•¨—ƒƒ‚ƒŠ—Ê
- *	Value3: ‰¼‘z{•¨—ƒƒ‚ƒŠ—Ê
- *	Value4: ‰¼‘z{•¨—‹ó‚«ƒƒ‚ƒŠ—Ê
+ *	Value0: ç‰©ç†ãƒ¡ãƒ¢ãƒªã®ä½¿ç”¨çŽ‡
+ *	Value1: ç‰©ç†ãƒ¡ãƒ¢ãƒªé‡
+ *	Value2: ç©ºãç‰©ç†ãƒ¡ãƒ¢ãƒªé‡
+ *	Value3: ä»®æƒ³ï¼‹ç‰©ç†ãƒ¡ãƒ¢ãƒªé‡
+ *	Value4: ä»®æƒ³ï¼‹ç‰©ç†ç©ºããƒ¡ãƒ¢ãƒªé‡
  */
 getmeminfo
 {
@@ -412,11 +412,11 @@ getmeminfo
 	}
 }
 
-// ¦C³‚µ‚Ü‚µ‚½B
+// â€»ä¿®æ­£ã—ã¾ã—ãŸã€‚
 getsetting
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getsetting: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("getsetting: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -424,11 +424,11 @@ getsetting
 	RES.RESULT = GETSETTING(TOAUTO(REQ.ARGS[0]))
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 getstrbytes
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getstrbytes: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("getstrbytes: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -447,13 +447,13 @@ gettickcount
 }
 
 /**
- *	Value0: ¼—ï”N
- *	Value1: ŒŽ
- *	Value2: “ú
- *	Value3: —j“ú(0-6)‚Å0‚ª“ú—j“ú
- *	Value4: Žž
- *	Value5: •ª
- *	Value6: •b
+ *	Value0: è¥¿æš¦å¹´
+ *	Value1: æœˆ
+ *	Value2: æ—¥
+ *	Value3: æ›œæ—¥(0-6)ã§0ãŒæ—¥æ›œæ—¥
+ *	Value4: æ™‚
+ *	Value5: åˆ†
+ *	Value6: ç§’
  */
 gettime
 {
@@ -464,11 +464,11 @@ gettime
 	}
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 gettype
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("gettype: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("gettype: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -488,24 +488,24 @@ gettype
 hexstrtoi
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("hexstrtoi: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("hexstrtoi: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = HEXSTRTOI(REQ.ARGS[0])
 }
 
-// ‹ó‚Ì”Ä—p”z—ñ‚ð•Ô‚µ‚Ä‚àˆÓ–¡‚ª‚È‚¢
+// ç©ºã®æ±Žç”¨é…åˆ—ã‚’è¿”ã—ã¦ã‚‚æ„å‘³ãŒãªã„
 iarray
 {
 	RES.RESULT = IARRAY()
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 insert
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("insert: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("insert: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -517,7 +517,7 @@ insert
 isfunc
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isfunc: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("isfunc: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -527,7 +527,7 @@ isfunc
 isintstr
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isintstr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("isintstr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -537,7 +537,7 @@ isintstr
 isrealstr
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isrealstr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("isrealstr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -547,7 +547,7 @@ isrealstr
 isvar
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isvar: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("isvar: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -557,7 +557,7 @@ isvar
 lettoname
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("lettoname: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("lettoname: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -567,7 +567,7 @@ lettoname
 loadlib
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("loadlib: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("loadlib: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -577,7 +577,7 @@ loadlib
 log
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("log: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("log: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -587,7 +587,7 @@ log
 log10
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("log10: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("log10: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -597,15 +597,15 @@ log10
 logging
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("logging: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("logging: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	LOGGING(REQ.ARGS[0])
 }
 
-// ‚Ù‚ÚˆÓ–¡‚È‚µ
-// ¦C³‚µ‚Ü‚µ‚½
+// ã»ã¼æ„å‘³ãªã—
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 lso
 {
 	RES.RESULT = LSO()
@@ -614,18 +614,18 @@ lso
 mkdir
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("mkdir: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("mkdir: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = MKDIR(REQ.ARGS[0])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 pow
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("pow: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("pow: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -634,7 +634,7 @@ pow
 	RES.RESULT = POW(_req0, _req1)
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 rand
 {
 	RES.RESULT = RAND(REQ.ARGS[0])
@@ -643,15 +643,15 @@ rand
 srand
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("srand: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("srand: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = SRAND(REQ.ARGS[0])
 }
 
-// Result: —ñ‹“‚³‚ê‚½”
-// Value[0..n]: •¶Žš—ñ‚Ì’·‚³
+// Result: åˆ—æŒ™ã•ã‚ŒãŸæ•°
+// Value[0..n]: æ–‡å­—åˆ—ã®é•·ã•
 re_getlen
 {
 	_result    = RE_GETLEN()
@@ -661,8 +661,8 @@ re_getlen
 	}
 }
 
-// Result: —ñ‹“‚³‚ê‚½”
-// Value[0..n]: —ñ‹“‚³‚ê‚½•”•ª•¶Žš—ñ‚ÌˆÊ’u
+// Result: åˆ—æŒ™ã•ã‚ŒãŸæ•°
+// Value[0..n]: åˆ—æŒ™ã•ã‚ŒãŸéƒ¨åˆ†æ–‡å­—åˆ—ã®ä½ç½®
 re_getpos
 {
 	_result    = RE_GETPOS()
@@ -672,8 +672,8 @@ re_getpos
 	}
 }
 
-// Result: —ñ‹“‚³‚ê‚½”
-// Value[0..n]: —ñ‹“‚³‚ê‚½•”•ª•¶Žš—ñi¦³í‚É’l‚ª•Ô‚ç‚È‚¢j
+// Result: åˆ—æŒ™ã•ã‚ŒãŸæ•°
+// Value[0..n]: åˆ—æŒ™ã•ã‚ŒãŸéƒ¨åˆ†æ–‡å­—åˆ—ï¼ˆâ€»æ­£å¸¸ã«å€¤ãŒè¿”ã‚‰ãªã„ï¼‰
 re_getstr
 {
 	_result    = RE_GETSTR()
@@ -683,12 +683,12 @@ re_getstr
 	}
 }
 
-// Result: Œ©‚Â‚©‚Á‚½”
-// Value[0..n]: Œ©‚Â‚©‚Á‚½•”•ª•¶Žš—ñ
+// Result: è¦‹ã¤ã‹ã£ãŸæ•°
+// Value[0..n]: è¦‹ã¤ã‹ã£ãŸéƒ¨åˆ†æ–‡å­—åˆ—
 re_grep
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_grep: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("re_grep: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -701,12 +701,12 @@ re_grep
 	}
 }
 
-// Result: ƒ}ƒbƒ`‚µ‚½‚ç1A‚µ‚È‚©‚Á‚½‚ç0
-// Value[0..n]: Œ©‚Â‚©‚Á‚½ê‡•”•ª•¶Žš—ñ
+// Result: ãƒžãƒƒãƒã—ãŸã‚‰1ã€ã—ãªã‹ã£ãŸã‚‰0
+// Value[0..n]: è¦‹ã¤ã‹ã£ãŸå ´åˆéƒ¨åˆ†æ–‡å­—åˆ—
 re_match
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_match: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("re_match: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -719,12 +719,12 @@ re_match
 	}
 }
 
-// Result: ’uŠ·Œ‹‰Ê•¶Žš—ñ
-// Value[0..n]: ‘ÎÛ•¶Žš—ñ‚Ì³‹K•\Œ»‘S‘Ì‚Éƒ}ƒbƒ`‚µ‚½•”•ª
+// Result: ç½®æ›çµæžœæ–‡å­—åˆ—
+// Value[0..n]: å¯¾è±¡æ–‡å­—åˆ—ã®æ­£è¦è¡¨ç¾å…¨ä½“ã«ãƒžãƒƒãƒã—ãŸéƒ¨åˆ†
 re_replace
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("re_replace: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("re_replace: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -736,12 +736,12 @@ re_replace
 	}
 }
 
-// Result: ƒ}ƒbƒ`‚·‚éŒÂŠ‚ª‚ ‚ê‚Î1A‚È‚©‚Á‚½‚ç0
-// Value[0..n]: Œ©‚Â‚©‚Á‚½ê‡•”•ª•¶Žš—ñ
+// Result: ãƒžãƒƒãƒã™ã‚‹å€‹æ‰€ãŒã‚ã‚Œã°1ã€ãªã‹ã£ãŸã‚‰0
+// Value[0..n]: è¦‹ã¤ã‹ã£ãŸå ´åˆéƒ¨åˆ†æ–‡å­—åˆ—
 re_search
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_search: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("re_search: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -754,12 +754,12 @@ re_search
 	}
 }
 
-// Result: •ªŠ„”
-// Value[0..n]: •ªŠ„‚³‚ê‚½•¶Žš—ñ
+// Result: åˆ†å‰²æ•°
+// Value[0..n]: åˆ†å‰²ã•ã‚ŒãŸæ–‡å­—åˆ—
 re_split
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_split: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("re_split: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -784,7 +784,7 @@ re_split
 replace
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("replace: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("replace: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -792,11 +792,11 @@ replace
 	RES.RESULT = REPLACE(REQ.ARGS[0], REQ.ARGS[1], REQ.ARGS[2], _count)
 }
 
-// ‘æ2ˆø”‚Ì•¶Žš—ñ‚Ì‰üs‚Í\\r\\n‚Æ‚µ‚ÄƒGƒXƒP[ƒv‚³‚ê‚Ä‚¢‚é‚±‚Æ
+// ç¬¬2å¼•æ•°ã®æ–‡å­—åˆ—ã®æ”¹è¡Œã¯\\r\\nã¨ã—ã¦ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã•ã‚Œã¦ã„ã‚‹ã“ã¨
 requestlib
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("requestlib: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("requestlib: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -806,18 +806,18 @@ requestlib
 rmdir
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("rmdir: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("rmdir: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = RMDIR(REQ.ARGS[0])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 round
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("round: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("round: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -828,7 +828,7 @@ round
 savevar
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("savevar: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("savevar: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -838,18 +838,18 @@ savevar
 setdelim
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("setdelim: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("setdelim: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	SETDELIM(REQ.ARGS[0], REQ.ARGS[1])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 setlasterror
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("setlasterror: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("setlasterror: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -860,7 +860,7 @@ setlasterror
 sin
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("sin: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("sin: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -868,12 +868,12 @@ sin
 	RES.RESULT = SIN(_req0)
 }
 
-// Result: •ªŠ„”
-// Value[0..n]: •ªŠ„‚³‚ê‚½•¶Žš—ñ
+// Result: åˆ†å‰²æ•°
+// Value[0..n]: åˆ†å‰²ã•ã‚ŒãŸæ–‡å­—åˆ—
 split
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("split: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("split: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -885,15 +885,15 @@ split
 	}
 }
 
-// Result: •ªŠ„”
-// Value0: ƒhƒ‰ƒCƒu•”•ª
-// Value1: ƒfƒBƒŒƒNƒgƒŠ•”•ª
-// Value2: ƒtƒ@ƒCƒ‹ƒx[ƒX–¼•”•ª
-// Value3: Šg’£Žq•”•ª
+// Result: åˆ†å‰²æ•°
+// Value0: ãƒ‰ãƒ©ã‚¤ãƒ–éƒ¨åˆ†
+// Value1: ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨åˆ†
+// Value2: ãƒ•ã‚¡ã‚¤ãƒ«ãƒ™ãƒ¼ã‚¹åéƒ¨åˆ†
+// Value3: æ‹¡å¼µå­éƒ¨åˆ†
 splitpath
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("splitpath: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("splitpath: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -907,18 +907,18 @@ splitpath
 sqrt
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("sqrt: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("sqrt: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = SQRT(REQ.ARGS[0])
 }
 
-// ŠÖ”‚Ìˆø”‚Í”Ä—p”z—ñ
+// é–¢æ•°ã®å¼•æ•°ã¯æ±Žç”¨é…åˆ—
 strform
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strform: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("strform: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -928,18 +928,18 @@ strform
 strlen
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strlen: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("strlen: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = STRLEN(REQ.ARGS[0])
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 strstr
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("strstr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("strstr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -947,11 +947,11 @@ strstr
 	RES.RESULT = STRSTR(REQ.ARGS[0], REQ.ARGS[1], _req2)
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 substr
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("substr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("substr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -960,11 +960,11 @@ substr
 	RES.RESULT = SUBSTR(REQ.ARGS[0], _req1, _req2)
 }
 
-// ¦C³‚µ‚Ü‚µ‚½
+// â€»ä¿®æ­£ã—ã¾ã—ãŸ
 tan
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tan: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("tan: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -980,18 +980,18 @@ tobinstr
 tohexstr
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tohexstr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("tohexstr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = TOHEXSTR(TOINT(REQ.ARGS[0]))
 }
 
-// Ä‚Ñ•¶Žš—ñ‚Å–ß‚é‚Ì‚ÅˆÓ–¡‚È‚µ
+// å†ã³æ–‡å­—åˆ—ã§æˆ»ã‚‹ã®ã§æ„å‘³ãªã—
 toint
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toint: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("toint: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1003,22 +1003,22 @@ tolower
 	RES.RESULT = TOLOWER(REQ.ARGS[0])
 }
 
-// Ä‚Ñ•¶Žš—ñ‚Å–ß‚é‚Ì‚ÅˆÓ–¡‚È‚µ
+// å†ã³æ–‡å­—åˆ—ã§æˆ»ã‚‹ã®ã§æ„å‘³ãªã—
 toreal
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toreal: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("toreal: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = TOREAL(REQ.ARGS[0])
 }
 
-// Œ³X•¶Žš—ñ‚È‚Ì‚ÅˆÓ–¡‚È‚µ
+// å…ƒã€…æ–‡å­—åˆ—ãªã®ã§æ„å‘³ãªã—
 tostr
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tostr: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("tostr: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1028,7 +1028,7 @@ tostr
 toupper
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toupper: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("toupper: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1038,7 +1038,7 @@ toupper
 unloadlib
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("unloadlib: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("unloadlib: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1046,24 +1046,24 @@ unloadlib
 }
 
 
-// ------ ¦ˆÈ‰ºV‹K’Ç‰Á•ª -----------
+// ------ â€»ä»¥ä¸‹æ–°è¦è¿½åŠ åˆ† -----------
 
 
 /**
- *	Value0: ARCHIV ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹A‚Ü‚½‚ÍƒA[ƒJƒCƒuƒfƒBƒŒƒNƒgƒŠB
- *	Value1: COMPRESSED ˆ³kƒtƒ@ƒCƒ‹A‚Ü‚½‚Íˆ³kƒfƒBƒŒƒNƒgƒŠB
- *	Value2: DIRECTORY ƒfƒBƒŒƒNƒgƒŠB
- *	Value3: HIDDEN ‰B‚µƒtƒ@ƒCƒ‹‚Ü‚½‚Í‰B‚µƒfƒBƒŒƒNƒgƒŠB
- *	Value4: NORMAL ‘®«‚È‚µB
- *	Value5: OFFLINE ‚±‚Ìƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^‚ÍA¡‚·‚®‚Í—˜—p•s”\B
- *	Value6: READONLY “Ç‚ÝŽæ‚èê—pƒtƒ@ƒCƒ‹B
- *	Value7: SYSTEM Windows‚ªŽg—p‚·‚éƒtƒ@ƒCƒ‹B
- *	Value8: TEMP ˆêŽžƒtƒ@ƒCƒ‹B
+ *	Value0: ARCHIV ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ•ã‚¡ã‚¤ãƒ«ã€ã¾ãŸã¯ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€‚
+ *	Value1: COMPRESSED åœ§ç¸®ãƒ•ã‚¡ã‚¤ãƒ«ã€ã¾ãŸã¯åœ§ç¸®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€‚
+ *	Value2: DIRECTORY ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€‚
+ *	Value3: HIDDEN éš ã—ãƒ•ã‚¡ã‚¤ãƒ«ã¾ãŸã¯éš ã—ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€‚
+ *	Value4: NORMAL å±žæ€§ãªã—ã€‚
+ *	Value5: OFFLINE ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã¯ã€ä»Šã™ãã¯åˆ©ç”¨ä¸èƒ½ã€‚
+ *	Value6: READONLY èª­ã¿å–ã‚Šå°‚ç”¨ãƒ•ã‚¡ã‚¤ãƒ«ã€‚
+ *	Value7: SYSTEM WindowsãŒä½¿ç”¨ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã€‚
+ *	Value8: TEMP ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã€‚
  */
 fattrib
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fattrib: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fattrib: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1077,12 +1077,12 @@ fattrib
 
 }
 
-// ------ ¦ˆÈ‰ºYAYAV‹K’Ç‰Á•ª -----------
+// ------ â€»ä»¥ä¸‹YAYAæ–°è¦è¿½åŠ åˆ† -----------
 
 bitwise_or
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_or: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("bitwise_or: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1094,7 +1094,7 @@ bitwise_or
 bitwise_and
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_and: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("bitwise_and: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1106,7 +1106,7 @@ bitwise_and
 bitwise_xor
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_xor: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("bitwise_xor: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1118,7 +1118,7 @@ bitwise_xor
 bitwise_not
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("bitwise_not: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("bitwise_not: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1129,7 +1129,7 @@ bitwise_not
 bitwise_shift
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_shift: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("bitwise_shift: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1141,7 +1141,7 @@ bitwise_shift
 charsetlibex
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("charsetlibex: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("charsetlibex: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1151,18 +1151,18 @@ charsetlibex
 cosh
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cosh: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("cosh: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
 	RES.RESULT = COSH(REQ.ARGS[0])
 }
 
-// “®ì‚µ‚È‚¢
+// å‹•ä½œã—ãªã„
 cvauto
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvauto: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("cvauto: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1172,7 +1172,7 @@ cvauto
 execute
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("execute: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("execute: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1187,7 +1187,7 @@ execute
 fdigest
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fdigest: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fdigest: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1197,7 +1197,7 @@ fdigest
 freadbin
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("freadbin: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("freadbin: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1215,7 +1215,7 @@ freadbin
 fwritebin
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwritebin: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fwritebin: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1230,7 +1230,7 @@ fwritebin
 	}
 }
 
-//@‘½•ªŽg‚¤ˆÓ–¡–³‚µB
+//ã€€å¤šåˆ†ä½¿ã†æ„å‘³ç„¡ã—ã€‚
 getcallstack
 {
 	_result = GETCALLSTACK
@@ -1242,7 +1242,7 @@ getcallstack
 getenv
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getenv: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("getenv: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1284,7 +1284,7 @@ getsystemfunclist
 getfuncinfo
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getfuncinfo: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("getfuncinfo: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1309,7 +1309,7 @@ getseccount
 getstrurldecode
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getseccount: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("getseccount: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1324,7 +1324,7 @@ getstrurldecode
 getstrurlencode
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getstrurlencode: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("getstrurlencode: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1339,7 +1339,7 @@ getstrurlencode
 han2zen
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("han2zen: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("han2zen: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1355,7 +1355,7 @@ han2zen
 processglobaldefine
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("processglobaldefine: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("processglobaldefine: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1385,7 +1385,7 @@ restorevar
 sinh
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("sinh: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("sinh: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1396,7 +1396,7 @@ sinh
 tanh
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tanh: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("tanh: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1404,11 +1404,11 @@ tanh
 	RES.RESULT = TANH(_req0)
 }
 
-//@‘½•ª‚Ù‚ÚŽg‚¤ˆÓ–¡‚È‚µ
+//ã€€å¤šåˆ†ã»ã¼ä½¿ã†æ„å‘³ãªã—
 toauto
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toauto: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("toauto: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1418,7 +1418,7 @@ toauto
 zen2han
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("zen2han: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("zen2han: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1434,7 +1434,7 @@ zen2han
 setsetting
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("setsetting: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("setsetting: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1448,7 +1448,7 @@ dumpvar {
 geterrorlog
 {
 	_result = GETERRORLOG()
-	RES.RESULT = ARRAYSIZE(_result)//‚Æ‚è‚ ‚¦‚¸ƒGƒ‰[ƒƒO‚ÌŒÂ”‚ð•Ô‚·‚±‚Æ‚É‚·‚é
+	RES.RESULT = ARRAYSIZE(_result)//ã¨ã‚Šã‚ãˆãšã‚¨ãƒ©ãƒ¼ãƒ­ã‚°ã®å€‹æ•°ã‚’è¿”ã™ã“ã¨ã«ã™ã‚‹
 	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
 		LETTONAME("RES.VALUE%(_i)", _result[_i])
 		LOGGING(EVAL("RES.VALUE%(_i)"))
@@ -1458,7 +1458,7 @@ geterrorlog
 dicload
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("dicload: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("dicload: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1474,7 +1474,7 @@ dicload
 dicunload
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("dicunload: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("dicunload: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1485,7 +1485,7 @@ dicunload
 undefglobaldefine
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("undefglobaldefine: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("undefglobaldefine: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1496,7 +1496,7 @@ undefglobaldefine
 undeffunc
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("undeffunc: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("undeffunc: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1513,12 +1513,12 @@ license {
 	}
 }
 
-// Result: ’uŠ·Œ‹‰Ê•¶Žš—ñ
-// Value[0..n]: ‘ÎÛ•¶Žš—ñ‚Ì³‹K•\Œ»‘S‘Ì‚Éƒ}ƒbƒ`‚µ‚½•”•ª
+// Result: ç½®æ›çµæžœæ–‡å­—åˆ—
+// Value[0..n]: å¯¾è±¡æ–‡å­—åˆ—ã®æ­£è¦è¡¨ç¾å…¨ä½“ã«ãƒžãƒƒãƒã—ãŸéƒ¨åˆ†
 re_replaceex
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("re_replaceex: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("re_replaceex: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1533,7 +1533,7 @@ re_replaceex
 fseek
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("fseek: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fseek: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1545,7 +1545,7 @@ fseek
 ftell
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("ftell: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("ftell: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1557,7 +1557,7 @@ ftell
 charsetidtotext
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("charsetidtotext: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("charsetidtotext: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1569,7 +1569,7 @@ charsetidtotext
 charsettexttoid
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("charsettexttoid: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("charsettexttoid: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1596,7 +1596,7 @@ getvarlist
 execute_wait
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("execute_wait: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("execute_wait: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1611,7 +1611,7 @@ execute_wait
 strdecode
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strdecode: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("strdecode: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1629,7 +1629,7 @@ strdecode
 strencode
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strencode: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("strencode: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1647,7 +1647,7 @@ strencode
 re_option
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("re_option: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("re_option: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1658,7 +1658,7 @@ re_option
 freadencode
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("freadencode: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("freadencode: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1674,7 +1674,7 @@ freadencode
 fwritedecode
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwritedecode: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("fwritedecode: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1686,11 +1686,11 @@ fwritedecode
 	}
 }
 
-// C³i2014.01.03j
+// ä¿®æ­£ï¼ˆ2014.01.03ï¼‰
 asort
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("asort: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("asort: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1709,11 +1709,11 @@ asort
 	RES.RESULT = ''
 }
 
-// ’Ç‰Ái2014.01.04j
+// è¿½åŠ ï¼ˆ2014.01.04ï¼‰
 translate
 {
 	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("translate: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("translate: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1725,7 +1725,7 @@ translate
 isevaluable
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isevaluable: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("isevaluable: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1736,7 +1736,7 @@ isevaluable
 settamahwnd
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("settamahwnd: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("settamahwnd: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1747,7 +1747,7 @@ settamahwnd
 isglobaldefine
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isglobaldefine: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("isglobaldefine: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1758,7 +1758,7 @@ isglobaldefine
 setglobaldefine
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("setglobaldefine: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("setglobaldefine: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
@@ -1769,7 +1769,7 @@ setglobaldefine
 append_runtime_dic
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("append_runtime_dic: ˆø”‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·")
+		LOGGING("append_runtime_dic: å¼•æ•°ãŒä¸è¶³ã—ã¦ã„ã¾ã™")
 		-1
 		return
 	}
