@@ -1787,3 +1787,36 @@ sleep
 
 	RES.RESULT = SLEEP(TOINT(REQ.ARGS[0]))
 }
+
+funcdecl_read
+{
+	if ARRAYSIZE(REQ.ARGS) < 2 {
+		LOGGING("funcdecl_read: 引数が不足しています")
+		-1
+		return
+	}
+
+	RES.RESULT = FUNCDECL_READ(REQ.ARGS[0], REQ.ARGS[1])
+}
+
+funcdecl_write
+{
+	if ARRAYSIZE(REQ.ARGS) < 2 {
+		LOGGING("funcdecl_write: 引数が不足しています")
+		-1
+		return
+	}
+
+	RES.RESULT = FUNCDECL_WRITE(REQ.ARGS[0], REQ.ARGS[1])
+}
+
+funcdecl_erase
+{
+	if ARRAYSIZE(REQ.ARGS) < 2 {
+		LOGGING("funcdecl_erase: 引数が不足しています")
+		-1
+		return
+	}
+
+	RES.RESULT = FUNCDECL_ERASE(REQ.ARGS[0], REQ.ARGS[1])
+}
