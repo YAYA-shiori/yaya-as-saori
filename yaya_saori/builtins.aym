@@ -472,9 +472,7 @@ gettype
 		-1
 		return
 	}
-	tes=ISREALSTR(REQ.ARGS[0])
-	tes2=ISINTSTR(REQ.ARGS[0])
-	RES.RESULT = GETTYPE(_req0)
+	RES.RESULT = GETTYPE(REQ.ARGS[0])
 	if ISINTSTR(REQ.ARGS[0]) == 1 {
 		_req0=TOINT(REQ.ARGS[0])
 		RES.RESULT = GETTYPE(_req0)
@@ -1819,4 +1817,10 @@ funcdecl_erase
 	}
 
 	RES.RESULT = FUNCDECL_ERASE(REQ.ARGS[0], REQ.ARGS[1])
+}
+
+//Tc567-2
+clearerrorlog
+{
+	CLEARERRORLOG()
 }

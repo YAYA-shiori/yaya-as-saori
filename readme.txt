@@ -65,6 +65,9 @@ postic　http://navy.nm.land.to/post/
 コミットログ
 https://github.com/nikolat/yaya-as-saori/commits/main
 
+2021.12.14　builtins.aymにclearerrorlogを追加
+　　　　　　builtins.aymのgettypeの不具合を修正
+　　　　　　yaya.dllを Tc567-2に変更
 2021.11.12　builtins.aymにsleepを追加
 　　　　　　yaya.dllを Tc564-1に変更
 　　　　　　ファイルの文字コードをShift_JISからUTF-8に変更
