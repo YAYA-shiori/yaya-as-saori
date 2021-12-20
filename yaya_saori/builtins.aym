@@ -1824,3 +1824,19 @@ clearerrorlog
 {
 	CLEARERRORLOG()
 }
+
+//Tc568-1
+arraydedup
+{
+	_result = ARRAYDEDUP(REQ.ARGS)
+	RES.RESULT = ARRAYSIZE(_result)
+	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
+		LETTONAME("RES.VALUE%(_i)", _result[_i])
+		LOGGING(EVAL("RES.VALUE%(_i)"))
+	}
+}
+
+strdigest
+{
+	RES.RESULT = STRDIGEST(REQ.ARGS[0], REQ.ARGS[1])
+}
