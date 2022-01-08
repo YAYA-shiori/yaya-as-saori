@@ -1840,3 +1840,32 @@ strdigest
 {
 	RES.RESULT = STRDIGEST(REQ.ARGS[0], REQ.ARGS[1])
 }
+
+//Tc569-1
+lint.getuserdeffuncusedby{lint.common()}
+lint.getfuncusedby{lint.common()}
+lint.getglobalvarusedby{lint.common()}
+lint.getlocalvarusedby{lint.common()}
+lint.getglobalvarletted{lint.common()}
+lint.getlocalvarletted{lint.common()}
+lint.common
+{
+	_a = EVAL(REQ.ARGUMENT0 + '(REQ.ARGS[0])')
+	_type = GETTYPEEX('_a')
+	if _type == 4 {
+		_i = 0
+		foreach _a; _v {
+			LETTONAME("RES.VALUE%(_i)", _v)
+			_i ++
+		}
+		RES.RESULT = ''
+	}
+	else {
+		RES.RESULT = _a
+	}
+}
+
+outputnum
+{
+	RES.RESULT = OUTPUTNUM(REQ.ARGS[0])
+}
