@@ -998,7 +998,17 @@ toint
 
 tolower
 {
-	RES.RESULT = TOLOWER(REQ.ARGS[0])
+	if ARRAYSIZE(REQ.ARGS) < 1 {
+		LOGGING("tolower: 引数が不足しています")
+		-1
+		return
+	}
+	elseif ARRAYSIZE(REQ.ARGS) == 1 {
+		RES.RESULT = TOLOWER(REQ.ARGS[0])
+	}
+	else {
+		RES.RESULT = TOLOWER(REQ.ARGS[0], REQ.ARGS[1])
+	}
 }
 
 // 再び文字列で戻るので意味なし
@@ -1030,7 +1040,12 @@ toupper
 		-1
 		return
 	}
-	RES.RESULT = TOUPPER(REQ.ARGS[0])
+	elseif ARRAYSIZE(REQ.ARGS) == 1 {
+		RES.RESULT = TOUPPER(REQ.ARGS[0])
+	}
+	else {
+		RES.RESULT = TOUPPER(REQ.ARGS[0], REQ.ARGS[1])
+	}
 }
 
 unloadlib
