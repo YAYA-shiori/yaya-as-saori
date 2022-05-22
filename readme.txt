@@ -61,6 +61,12 @@ http://emily.shillest.net/ayaya/index.php?FrontPage
 postic　http://navy.nm.land.to/post/
 
 
+■ライセンス
+Unlicense licenseとします。
+歴代のメンテナの方々に了承を得るべきところでしょうけれども
+これまでの彼らのスタンスから鑑みて快諾してくれるものと信じます。
+
+
 ■更新履歴
 コミットログ
 https://github.com/nikolat/yaya-as-saori/commits/main
