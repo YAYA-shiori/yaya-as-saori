@@ -41,9 +41,8 @@ yaya.dll
 yaya.txt
 ayasaori.aym
 builtins.aym
-messagetxtフォルダ
 
-以上の5つを同じ階層に置く。
+以上の4つを同じ階層に置く。
 SHIORIからこの「yaya.dll」をパス指定しSAORIとして呼び出す。
 
 　Argument0 使用したいYAYAの関数名
