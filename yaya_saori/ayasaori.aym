@@ -85,7 +85,7 @@ request
 	case REQ.COMMAND {
 	when 'GET Version' {
 		RES.RESULT = GETSETTING('coreinfo.name') + '/' + GETSETTING('coreinfo.version')
-		AYASAORI.Response('200 OK')
+		AYASAORI.Response(STATUS_OK)
 		return
 	}
 	when 'EXECUTE' {
@@ -99,29 +99,20 @@ request
 			// 変数をセットする。大文字で統一
 			// Charset, SecurityLevel, Sender, Argument[0..n] 以外は無いはず
 			_key = TOUPPER(_key)
-			if _key == 'CHARSET' || _key == 'SECURITYLEVEL' /
-				|| _key == 'SENDER' || RE_MATCH(_key, 'ARGUMENT[0-9]+')
+			if RE_MATCH(_key, 'CHARSET|SECURITYLEVEL|SENDER|ARGUMENT[0-9]+')
 				LETTONAME("REQ.%(_key)", _value)
 		}
 
 		// ユーザ関数のみ処理対象とする
 		_result = 0
 		if ISFUNC(REQ.ARGUMENT0) == FUNC_USER || ISFUNC(REQ.ARGUMENT0) == FUNC_BUILTIN {
+			// ループ操作の簡易化のために、REQ.ARGS配列を作る
 			REQ.ARGS = IARRAY()
-			_i = 0
-			while 1 {
-				// ループ操作の簡易化のために、REQ.ARGS配列を作る
-				if ISVAR("REQ.ARGUMENT%(_i)") {
-					// Argument0 はメソッド(または関数名)なので飛ばす
-					if _i == 0 {
-						_i++
-						continue
-					}
-					REQ.ARGS ,= EVAL("REQ.ARGUMENT%(_i)")
-					_i++
-				} else {
-					break
-				}
+			// Argument0 はメソッド(または関数名)なので飛ばす
+			_i = 1
+			while ISVAR("REQ.ARGUMENT%(_i)") {
+				REQ.ARGS ,= EVAL("REQ.ARGUMENT%(_i)")
+				_i++
 			}
 
 			// コンストラクタコール
@@ -136,7 +127,7 @@ request
 						_func = "%(_cls).Load"
 						// モジュールロードの実行
 						if ISFUNC(_func) {
-							_dummy = EVAL(_func)
+							void EVAL(_func)
 						}
 						AYASAORI.LOADEDCLS ,= _cls
 					}
@@ -165,12 +156,8 @@ request
 		ERASEVAR('REQ.SENDER')
 		ERASEVAR('REQ.ARGS')
 		_i = 0
-		while 1 {
-			if ISVAR("REQ.ARGUMENT%(_i)") {
-				ERASEVAR("REQ.ARGUMENT%(_i)")
-			} else {
-				break
-			}
+		while ISVAR("REQ.ARGUMENT%(_i)") {
+			ERASEVAR("REQ.ARGUMENT%(_i)")
 			_i++
 		}
 	}
@@ -229,13 +216,9 @@ AYASAORI.Response
 		ERASEVAR('RES.RESULT')
 	}
 	_i = 0
-	while 1 {
-		if ISVAR("RES.VALUE%(_i)") {
-			_response += "Value%(_i): " + EVAL("RES.VALUE%(_i)") + CRLF
-			ERASEVAR("RES.VALUE%(_i)")
-		} else {
-			break
-		}
+	while ISVAR("RES.VALUE%(_i)") {
+		_response += "Value%(_i): " + EVAL("RES.VALUE%(_i)") + CRLF
+		ERASEVAR("RES.VALUE%(_i)")
 		_i++
 	}
 	_response + CRLF
