@@ -1179,7 +1179,12 @@ cvauto
 		-1
 		return
 	}
-	RES.RESULT = CVAUTO(REQ.ARGS[0])
+	elseif REQ.ARGS[1]!="" {
+		RES.RESULT = CVAUTO(REQ.ARGS[0],REQ.ARGS[1])
+	}
+	else {
+		RES.RESULT = CVAUTO(REQ.ARGS[0])
+	}
 }
 
 execute
@@ -1434,7 +1439,12 @@ toauto
 		-1
 		return
 	}
-	RES.RESULT = TOAUTO(REQ.ARGS[0])
+	elseif REQ.ARGS[1]!="" {
+		RES.RESULT = TOAUTO(REQ.ARGS[0],REQ.ARGS[1])
+	}
+	else {
+		RES.RESULT = TOAUTO(REQ.ARGS[0])
+	}
 }
 
 zen2han
