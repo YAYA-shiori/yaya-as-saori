@@ -1182,6 +1182,16 @@ cvauto
 	RES.RESULT = CVAUTO(REQ.ARGS[0])
 }
 
+cvautoex
+{
+	if ARRAYSIZE(REQ.ARGS) < 1 {
+		LOGGING("cvautoex: 引数が不足しています")
+		-1
+		return
+	}
+	RES.RESULT = CVAUTOEX(REQ.ARGS[0])
+}
+
 execute
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
@@ -1435,6 +1445,16 @@ toauto
 		return
 	}
 	RES.RESULT = TOAUTO(REQ.ARGS[0])
+}
+
+toautoex
+{
+	if ARRAYSIZE(REQ.ARGS) < 1 {
+		LOGGING("toautoex: 引数が不足しています")
+		-1
+		return
+	}
+	RES.RESULT = TOAUTOEX(REQ.ARGS[0])
 }
 
 zen2han
