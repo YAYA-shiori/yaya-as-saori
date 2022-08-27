@@ -68,7 +68,7 @@ Unlicense licenseとします。
 
 ■更新履歴
 コミットログ
-https://github.com/nikolat/yaya-as-saori/commits/main
+https://github.com/YAYA-shiori/yaya-as-saori/commits/main
 
 2021.11.12　builtins.aymにsleepを追加
 　　　　　　yaya.dllを Tc564-1に変更
