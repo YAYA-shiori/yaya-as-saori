@@ -103,6 +103,12 @@ request
 				LETTONAME("REQ.%(_key)", _value)
 		}
 
+		// externalの場合はExternalEvent.を接頭辞として明示的に付けた関数のみ有効とする
+		// コンストラクタコールも上記に合わせて設定すること
+		if TOLOWER(REQ.SECURITYLEVEL) == 'external' {
+			REQ.ARGUMENT0 = 'ExternalEvent.' + REQ.ARGUMENT0
+		}
+
 		// ユーザ関数のみ処理対象とする
 		_result = 0
 		if ISFUNC(REQ.ARGUMENT0) == FUNC_USER || ISFUNC(REQ.ARGUMENT0) == FUNC_BUILTIN {
