@@ -1398,10 +1398,14 @@ readfmo
 		_r = READFMO(REQ.ARGS[0], REQ.ARGS[1])
 	}
 	_a = SPLIT(_r, CHR(0xd)+CHR(0xa))
-	RES.RESULT = ARRAYSIZE(_a)
+	_c = 0
 	for _i = 0; _i < ARRAYSIZE(_a); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _a[_i])
+		if _a[_i] != '' {
+			LETTONAME("RES.VALUE%(_i)", _a[_i])
+			_c++
+		}
 	}
+	RES.RESULT = _c
 }
 
 restorevar
