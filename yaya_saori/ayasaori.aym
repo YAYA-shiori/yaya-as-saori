@@ -84,8 +84,23 @@ request
 
 	case REQ.COMMAND {
 	when 'GET Version' {
+		_charset = ''
+		foreach _header; _line {
+			if _line == ''
+				break
+			_field = SPLIT(_line, ':', 2)
+			_key   = CUTSPACE(_field[0])
+			_value = CUTSPACE(_field[1])
+			_key = TOUPPER(_key)
+			if _key == 'CHARSET' {
+				_charset = _value
+				break
+			}
+		}
+		REQ.CHARSET = _charset
 		RES.RESULT = GETSETTING('coreinfo.name') + '/' + GETSETTING('coreinfo.version')
 		AYASAORI.Response(STATUS_OK)
+		ERASEVAR('REQ.CHARSET')
 		return
 	}
 	when 'EXECUTE' {
@@ -200,7 +215,13 @@ AYASAORI.Response
 	} else {
 		_charset = REQ.CHARSET
 	}
-	void SETSETTING('charset.output', _charset)
+	_unsupported = 127
+	if CHARSETTEXTTOID(_charset) == _unsupported {
+		_charset = GETSETTING('charset.output')
+	}
+	elseif !SETSETTING('charset.output', _charset) {
+		_charset = GETSETTING('charset.output')
+	}
 	if ISVAR('RES.SENDER') {
 		_sender = RES.SENDER
 		ERASEVAR('RES.SENDER')
