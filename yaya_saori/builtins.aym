@@ -1331,32 +1331,14 @@ getseccount
 
 getstrurldecode
 {
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getseccount: 引数が不足しています")
-		-1
-		return
-	}
-	if REQ.ARGS[1]=="" {
-		RES.RESULT = GETSTRURLDECODE(REQ.ARGS[0])
-	}
-	else {
-		RES.RESULT = GETSTRURLDECODE(REQ.ARGS[0],REQ.ARGS[1])
-	}
+	strdecode()
+	return
 }
 
 getstrurlencode
 {
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getstrurlencode: 引数が不足しています")
-		-1
-		return
-	}
-	if REQ.ARGS[1]=="" {
-		RES.RESULT = GETSTRURLENCODE(REQ.ARGS[0])
-	}
-	else {
-		RES.RESULT = GETSTRURLENCODE(REQ.ARGS[0],REQ.ARGS[1])
-	}
+	strencode()
+	return
 }
 
 han2zen
@@ -1665,10 +1647,10 @@ strdecode
 		RES.RESULT = STRDECODE(REQ.ARGS[0])
 	}
 	elseif REQ.ARGS[2]=="" {
-		RES.RESULT = STRENCODE(REQ.ARGS[0],REQ.ARGS[1])
+		RES.RESULT = STRDECODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]))
 	}
 	else {
-		RES.RESULT = STRDECODE(REQ.ARGS[0],REQ.ARGS[1],REQ.ARGS[2])
+		RES.RESULT = STRDECODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]),REQ.ARGS[2])
 	}
 }
 
@@ -1683,10 +1665,10 @@ strencode
 		RES.RESULT = STRENCODE(REQ.ARGS[0])
 	}
 	elseif REQ.ARGS[2]=="" {
-		RES.RESULT = STRENCODE(REQ.ARGS[0],REQ.ARGS[1])
+		RES.RESULT = STRENCODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]))
 	}
 	else {
-		RES.RESULT = STRENCODE(REQ.ARGS[0],REQ.ARGS[1],REQ.ARGS[2])
+		RES.RESULT = STRENCODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]),REQ.ARGS[2])
 	}
 }
 
