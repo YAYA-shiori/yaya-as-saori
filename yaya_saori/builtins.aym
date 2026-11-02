@@ -1,22 +1,186 @@
-// ※修正しました
-acos
+// YAYAビルトイン(システム)関数モジュール
+//
+// SAORI の Argument0 に YAYA 本体のシステム関数名が来ると、ayasaori.aym が AYASAORI.CallBuiltin を呼ぶ。
+// 本体の関数は個別の wrapper を書かなくても、そのまま呼べる(YAYA に関数が増えても自動で使える)。
+//
+//   Argument1.. → 引数(すべて文字列で届く。数値が要る引数だけ AYASAORI.ArgSig で変換する)
+//   戻り値      → 整数・実数・文字列は Result、配列は Value0..n、ハッシュは Result(SERIALIZEVAR の書式)
+//   引数が足りない(本体が W0008 を出した) → 400 Bad Request
+//
+// 関数の追加や調整の仕方
+//   ・普通の関数            : 何も書かなくてよい
+//   ・数値の引数がある関数  : AYASAORI.ArgSig に型を書く
+//   ・配列を返して Result に個数や連結文字列も欲しい関数 : AYASAORI.ArrayResult に書く
+//   ・それ以外の特殊な返し方 : 関数名を小文字にした個別 wrapper をこのファイルや別の .aym に書く
+//                               (例: fread。個別 wrapper があればそちらが優先される)。
+//                               引数は REQ.ARGS、結果は RES.RESULT / RES.VALUEn に入れる。
+//                               引数が足りないときは -1 を返す(400 Bad Request になる)
+
+// #define はファイルごとに有効なので、ayasaori.aym のものはここでは使えない
+#define FUNC_USER	1		/* ISFUNC の戻り値: ユーザ関数 */
+#define FUNC_BUILTIN	2		/* ISFUNC の戻り値: 本体のシステム関数 */
+#define CRLF		CHR(0xd)+CHR(0xa)	/* 改行コード */
+
+
+/**	本体のシステム関数を呼び、結果を RES.* に入れる
+ *
+ *	@param	string	_argv[0] 本体の関数名(GETSYSTEMFUNCLIST の綴り)
+ *	@return	int		-1 なら 400 Bad Request
+ */
+AYASAORI.CallBuiltin
 {
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("acos: 引数が不足しています")
-		-1
-		return
+	_name = _argv[0]
+
+	// 個別 wrapper があれば優先する
+	_wrapper = TOLOWER(_name)
+	if ISFUNC(_wrapper) == FUNC_USER {
+		return EVAL(_wrapper)
 	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = ACOS(_req0)
+
+	// EVAL に渡す文字列を組み立てるので、本体に実在する関数名だけを通す。内部用の名前は呼べない
+	if ISFUNC(_name) != FUNC_BUILTIN || _name == 'EmBeD_HiStOrY' {
+		return -1
+	}
+
+	// 引数を型ヒントどおりに変換する。末尾の空の引数は、省略できるもの(型ヒントが大文字)なら渡さない
+	// 型ヒントが無い関数(ほとんど)は、そのまま渡す
+	_sig  = AYASAORI.ArgSig(_name)
+	_args = REQ.ARGS
+	if _sig != '' {
+		_keep = ARRAYSIZE(REQ.ARGS)
+		while _keep > 0 && REQ.ARGS[_keep - 1] == '' && RE_MATCH(SUBSTR(_sig, _keep - 1, 1), '[A-Z]') {
+			_keep -= 1
+		}
+		_args = IARRAY()
+		for _i = 0; _i < _keep; _i++ {
+			_value = REQ.ARGS[_i]
+			case TOLOWER(SUBSTR(_sig, _i, 1)) {
+			when 'i' { _value = TOINT(_value) }
+			when 'r' { _value = TOREAL(_value) }
+			when 'a' { _value = TOAUTO(_value) }
+			when 'x' { _value = TOAUTOEX(_value) }
+			}
+			_args ,= _value
+		}
+	}
+
+	// 配列は関数の引数に展開されるので、本体の関数にそのまま渡せる
+	SETLASTERROR(0)
+	_r = EVAL("%(_name)(_args)")
+	if GETLASTERROR() == 8 {
+		return -1
+	}
+
+	// 戻り値の型で、返し方を決める
+	_type = GETTYPEEX('_r')
+	if _type == 4 {
+		_mode = AYASAORI.ArrayResult(_name)
+		if _mode == 'count'
+			RES.RESULT = ARRAYSIZE(_r)
+		elseif _mode == 'join'
+			RES.RESULT = TOSTR(_r)
+		AYASAORI.PutValues(_r)
+	}
+	elseif _type == 5 {
+		RES.RESULT = SERIALIZEVAR('_r')
+	}
+	elseif _type != 0 {
+		RES.RESULT = _r
+	}
+
+	// 正規表現の関数は、一致した部分文字列を Value0..n にも入れる
+	case _name {
+	when 'RE_GREP', 'RE_MATCH', 'RE_SEARCH' {
+		if _r >= 1
+			AYASAORI.PutValues(RE_GETSTR())
+	}
+	when 'RE_REPLACE', 'RE_REPLACEEX' {
+		AYASAORI.PutValues(RE_GETSTR())
+	}
+	}
+	return 0
 }
 
-// 位置情報はValue0で返る
+
+/**	配列を Value0..n に入れる
+ *
+ *	@param	array	_argv 値(配列は引数に展開される)
+ */
+AYASAORI.PutValues
+{
+	for _i = 0; _i < ARRAYSIZE(_argv); _i++ {
+		LETTONAME("RES.VALUE%(_i)", _argv[_i])
+	}
+	return
+}
+
+
+/**	引数の型ヒント
+ *	一文字が一つの引数。書かれていない引数や関数は、文字列のまま渡す
+ *	  s 文字列(そのまま)   i 整数(TOINT)   r 実数(TOREAL)
+ *	  a 整数・実数・文字列を見分ける(TOAUTO)   x 同じ(TOAUTOEX。"007" や "+0900" は文字列のまま)
+ *	大文字は省略できる引数。末尾にあって空のときは渡さない(REPLACE の第4引数など)
+ *	小文字の引数が足りなければ、本体の関数が W0008 を出し、400 Bad Request になる
+ *
+ *	@param	string	_argv[0] 本体の関数名
+ *	@return	string	型ヒント
+ */
+AYASAORI.ArgSig
+{
+	case _argv[0] {
+	when 'ACOS', 'ASIN', 'ATAN', 'CEIL', 'COS', 'COSH', 'FLOOR', 'LOG', 'LOG10', 'ROUND', 'SIN', 'SINH', 'SQRT', 'TAN', 'TANH' { 'r' }
+	when 'POW' { 'rr' }
+	when 'BITWISE_NOT', 'CHARSETIDTOTEXT', 'CHR', 'SETTAMAHWND', 'SLEEP', 'TOBINSTR', 'TOHEXSTR' { 'i' }
+	when 'BITWISE_AND', 'BITWISE_OR', 'BITWISE_SHIFT', 'BITWISE_XOR' { 'ii' }
+	when 'GETSETTING' { 'a' }
+	when 'GETTICKCOUNT', 'GETTIMEZONE', 'RAND', 'SRAND' { 'I' }
+	when 'CHRCODE', 'PARSEHEADER' { 'sI' }
+	when 'GETSTRBYTES' { 'sA' }
+	when 'GETTIME' { 'IX' }
+	when 'DIRECTSSTP' { 'isA' }
+	when 'ERASE', 'SUBSTR' { 'sii' }
+	when 'FSEEK', 'INSERT' { 'sis' }
+	when 'STRSTR' { 'ssi' }
+	when 'REPLACE', 'RE_REPLACE', 'RE_REPLACEEX' { 'sssI' }
+	when 'RE_SPLIT', 'SPLIT' { 'ssI' }
+	when 'FREADBIN', 'FREADENCODE' { 'siS' }
+	when 'FWRITEBIN', 'FWRITEDECODE' { 'ssS' }
+	when 'STRDECODE', 'STRENCODE' { 'sAS' }
+	when 'EXECUTE', 'EXECUTE_WAIT' { 'sSS' }
+	when 'DICLOAD', 'FENUM', 'HAN2ZEN', 'TOLOWER', 'TOUPPER', 'ZEN2HAN' { 'sS' }
+	when 'GETFUNCLIST', 'GETSYSTEMFUNCLIST', 'GETVARLIST', 'RESTOREVAR' { 'S' }
+	others { '' }
+	}
+}
+
+
+/**	配列を返す関数の、Result の返し方
+ *	ここに無い関数は Value0..n だけを返す
+ *	  count Result に要素の数
+ *	  join  Result に要素を , でつないだ文字列
+ *
+ *	@param	string	_argv[0] 本体の関数名
+ *	@return	string	count / join / 空
+ */
+AYASAORI.ArrayResult
+{
+	case _argv[0] {
+	when 'ARRAYDEDUP', 'ASEARCHEX', 'GETERRORLOG', 'RE_GETLEN', 'RE_GETPOS', 'RE_GETSTR', 'RE_SPLIT', 'SPLIT', 'SPLITPATH' { 'count' }
+	when 'FATTRIB', 'GETVARLIST', 'LICENSE' { 'join' }
+	others { '' }
+	}
+}
+
+
+// ------ 個別 wrapper ------
+// 戻り値の返し方が特殊な関数。AYASAORI.CallBuiltin より優先される。
+
+
+// Value0 に LSO を返す
 any
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("any: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
 	if ARRAYSIZE(REQ.ARGS) == 1
 		RES.RESULT = ANY(REQ.ARGS[0])
@@ -25,159 +189,11 @@ any
 	RES.VALUE0 = LSO
 }
 
-arraysize
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("arraysize: 引数が不足しています")
-		-1
-		return
-	}
-	if ARRAYSIZE(REQ.ARGS) == 1
-		RES.RESULT = ARRAYSIZE(REQ.ARGS[0])
-	else
-		RES.RESULT = ARRAYSIZE(REQ.ARGS)
-}
-
-
-asearch
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("asearch: 引数が不足しています")
-		-1
-		return
-	}
-	_key = REQ.ARGS[0]
-	REQ.ARGS[0] = IARRAY
-	RES.RESULT = ASEARCH(_key, REQ.ARGS)
-}
-
-
-// ※修正しました
-
-// Resultは発見した個数
-// Value[0..n]に個々の発見位置
-asearchex
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("asearchex: 引数が不足しています")
-		-1
-		return
-	}
-	_key = REQ.ARGS[0]
-	REQ.ARGS[0] = IARRAY
-	_result = ASEARCHEX(_key, REQ.ARGS)
-	RES.RESULT = _result
-	RES.RESULT = ARRAYSIZE(RES.RESULT)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-// ※修正しました
-asin
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("asin: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = ASIN(_req0)
-}
-
-// ※修正しました
-atan
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("atan: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = ATAN(_req0)
-}
-
-binstrtoi
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("binstrtoi: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = BINSTRTOI(REQ.ARGS[0])
-}
-
-// ※修正しました
-ceil
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("ceil: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = CEIL(_req0)
-}
-
-charsetlib
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("charsetlib: 引数が不足しています")
-		-1
-		return
-	}
-	CHARSETLIB(REQ.ARGS[0])
-}
-
-chr
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("chr: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = CHR(REQ.ARGS[0])
-}
-
-chrcode
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("chrcode: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = CHRCODE(REQ.ARGS[0])
-}
-
-// ※修正しました
-cos
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cos: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = COS(_req0)
-}
-
-cutspace
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cutspace: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = CUTSPACE(REQ.ARGS[0])
-}
-
 // レスポンスヘッダでまた文字列に戻るので意味がない
 cvint
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvint: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
 	CVINT(REQ.ARGS[0])
 	RES.RESULT = REQ.ARGS[0]
@@ -187,9 +203,7 @@ cvint
 cvreal
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvreal: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
 	CVREAL(REQ.ARGS[0])
 	RES.RESULT = REQ.ARGS[0]
@@ -199,133 +213,17 @@ cvreal
 cvstr
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvstr: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
 	CVSTR(REQ.ARGS[0])
 	RES.RESULT = REQ.ARGS[0]
-}
-
-erase
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("erase: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = ERASE(REQ.ARGS[0], REQ.ARGS[1], REQ.ARGS[2])
-}
-
-erasevar
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("erasevar: 引数が不足しています")
-		-1
-		return
-	}
-	ERASEVAR(REQ.ARGS[0])
-}
-
-eval
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("eval: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = EVAL(REQ.ARGS[0])
-}
-
-fcharset
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fcharset: 引数が不足しています")
-		-1
-		return
-	}
-	FCHARSET(REQ.ARGS[0])
-}
-
-fclose
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fclose: 引数が不足しています")
-		-1
-		return
-	}
-	FCLOSE(REQ.ARGS[0])
-}
-
-fcopy
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fcopy: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FCOPY(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-fdel
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fdel: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FDEL(REQ.ARGS[0])
-}
-
-fenum
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fenum: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FENUM(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-// ※修正しました
-floor
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("floor: 引数が不足しています")
-		-1
-		return
-	}
-	_req0=TOREAL(REQ.ARGS[0])
-	RES.RESULT = FLOOR(_req0)
-}
-
-fmove
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fmove: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FMOVE(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-fopen
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fopen: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FOPEN(REQ.ARGS[0], REQ.ARGS[1])
 }
 
 // ファイル終端まで読むと、Resultが無くなりValue0が"EOF"になる
 fread
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fread: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
 	_result = FREAD(REQ.ARGS[0])
 	if GETTYPE(_result) == 1
@@ -334,989 +232,35 @@ fread
 		RES.RESULT = _result
 }
 
-frename
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("frename: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FRENAME(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-fsize
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fsize: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FSIZE(REQ.ARGS[0])
-}
-
-// ※修正しました
-fwrite
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwrite: 引数が不足しています")
-		-1
-		return
-	}
-	FWRITE(REQ.ARGS[0],REQ.ARGS[1])
-}
-
-// ※修正しました
-fwrite2
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwrite2: 引数が不足しています")
-		-1
-		return
-	}
-	FWRITE2(REQ.ARGS[0],REQ.ARGS[1])
-}
-
-// 恐らく意味なし
-getdelim
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getdelim: 引数が不足しています")
-		-1
-		return
-	}
-	if ARRAYSIZE(REQ.ARGS) == 1
-		RES.RESULT = GETDELIM(REQ.ARGS[0])
-	else
-		RES.RESULT = GETDELIM(TOSTR(REQ.ARGS))
-}
-
-// ※修正しました
+// AYASAORI.CallBuiltin は呼ぶ前に最後のエラーを 0 に戻すので、これは個別にしている
 getlasterror
 {
 	RES.RESULT = GETLASTERROR()
 }
 
-// ※修正しました
-/**
- *	Value0: 物理メモリの使用率
- *	Value1: 物理メモリ量
- *	Value2: 空き物理メモリ量
- *	Value3: 仮想＋物理メモリ量
- *	Value4: 仮想＋物理空きメモリ量
- */
-getmeminfo
-{
-	_result = GETMEMINFO()
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-// ※修正しました。
-getsetting
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getsetting: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = GETSETTING(TOAUTO(REQ.ARGS[0]))
-}
-
-// ※修正しました
-getstrbytes
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getstrbytes: 引数が不足しています")
-		-1
-		return
-	}
-	if ARRAYSIZE(REQ.ARGS) == 1 {
-		RES.RESULT = GETSTRBYTES(REQ.ARGS[0])
-	}
-	else {
-		_req1 = TOINT(REQ.ARGS[1])
-		RES.RESULT = GETSTRBYTES(REQ.ARGS[0], _req1)
-	}
-}
-
-gettickcount
-{
-	RES.RESULT = GETTICKCOUNT()
-}
-
-/**
- *	Value0: 西暦年
- *	Value1: 月
- *	Value2: 日
- *	Value3: 曜日(0-6)で0が日曜日
- *	Value4: 時
- *	Value5: 分
- *	Value6: 秒
- */
-gettime
-{
-	_result = GETTIME(REQ.ARGS[0])
-
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-// ※修正しました
-gettype
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("gettype: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = GETTYPE(REQ.ARGS[0])
-	if ISINTSTR(REQ.ARGS[0]) == 1 {
-		_req0=TOINT(REQ.ARGS[0])
-		RES.RESULT = GETTYPE(_req0)
-	}
-	elseif ISREALSTR(REQ.ARGS[0]) == 1 {
-		_req0=TOREAL(REQ.ARGS[0])
-		RES.RESULT = GETTYPE(_req0)
-	}
-}
-
-hexstrtoi
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("hexstrtoi: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = HEXSTRTOI(REQ.ARGS[0])
-}
-
-// 空の汎用配列を返しても意味がない
-iarray
-{
-	RES.RESULT = IARRAY()
-}
-
-// ※修正しました
-insert
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("insert: 引数が不足しています")
-		-1
-		return
-	}
-	
-	_req1 = TOINT(REQ.ARGS[1])
-	RES.RESULT = INSERT(REQ.ARGS[0], _req1, REQ.ARGS[2])
-}
-
-isfunc
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isfunc: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = ISFUNC(REQ.ARGS[0])
-}
-
-isintstr
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isintstr: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = ISINTSTR(REQ.ARGS[0])
-}
-
-isrealstr
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isrealstr: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = ISREALSTR(REQ.ARGS[0])
-}
-
-isvar
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isvar: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = ISVAR(REQ.ARGS[0])
-}
-
-lettoname
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("lettoname: 引数が不足しています")
-		-1
-		return
-	}
-	LETTONAME(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-loadlib
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("loadlib: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = LOADLIB(REQ.ARGS[0])
-}
-
-log
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("log: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = LOG(REQ.ARGS[0])
-}
-
-log10
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("log10: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = LOG10(REQ.ARGS[0])
-}
-
-logging
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("logging: 引数が不足しています")
-		-1
-		return
-	}
-	LOGGING(REQ.ARGS[0])
-}
-
-// ほぼ意味なし
-// ※修正しました
-lso
-{
-	RES.RESULT = LSO()
-}
-
-mkdir
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("mkdir: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = MKDIR(REQ.ARGS[0])
-}
-
-// ※修正しました
-pow
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("pow: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	_req1 = TOREAL(REQ.ARGS[1])
-	RES.RESULT = POW(_req0, _req1)
-}
-
-// ※修正しました
-rand
-{
-	RES.RESULT = RAND(REQ.ARGS[0])
-}
-
-srand
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("srand: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = SRAND(REQ.ARGS[0])
-}
-
-// Result: 列挙された数
-// Value[0..n]: 文字列の長さ
-re_getlen
-{
-	_result    = RE_GETLEN()
-	RES.RESULT = ARRAYSIZE(_result)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-// Result: 列挙された数
-// Value[0..n]: 列挙された部分文字列の位置
-re_getpos
-{
-	_result    = RE_GETPOS()
-	RES.RESULT = ARRAYSIZE(_result)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-// Result: 列挙された数
-// Value[0..n]: 列挙された部分文字列（※正常に値が返らない）
-re_getstr
-{
-	_result    = RE_GETSTR()
-	RES.RESULT = ARRAYSIZE(_result)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-// Result: 見つかった数
-// Value[0..n]: 見つかった部分文字列
-re_grep
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_grep: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = RE_GREP(REQ.ARGS[0], REQ.ARGS[1])
-	if RES.RESULT >= 1 {
-		_result    = RE_GETSTR()
-		for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-			LETTONAME("RES.VALUE%(_i)", _result[_i])
-		}
-	}
-}
-
-// Result: マッチしたら1、しなかったら0
-// Value[0..n]: 見つかった場合部分文字列
-re_match
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_match: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = RE_MATCH(REQ.ARGS[0], REQ.ARGS[1])
-	if RES.RESULT == 1 {
-		_result = RE_GETSTR()
-		for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-			LETTONAME("RES.VALUE%(_i)", _result[_i])
-		}
-	}
-}
-
-// Result: 置換結果文字列
-// Value[0..n]: 対象文字列の正規表現全体にマッチした部分
-re_replace
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("re_replace: 引数が不足しています")
-		-1
-		return
-	}
-	_count = TOINT(REQ.ARGS[3])
-	RES.RESULT = RE_REPLACE(REQ.ARGS[0], REQ.ARGS[1], REQ.ARGS[2], _count)
-	_result = RE_GETSTR()
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-// Result: マッチする個所があれば1、なかったら0
-// Value[0..n]: 見つかった場合部分文字列
-re_search
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_search: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = RE_SEARCH(REQ.ARGS[0], REQ.ARGS[1])
-	if RES.RESULT == 1 {
-		_result = RE_GETSTR()
-		for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-			LETTONAME("RES.VALUE%(_i)", _result[_i])
-		}
-	}
-}
-
-// Result: 分割数
-// Value[0..n]: 分割された文字列
-re_split
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("re_split: 引数が不足しています")
-		-1
-		return
-	}
-	
-	_result = ""
-	
-	if REQ.ARGS[2]=="" {
-		_result = RE_SPLIT(REQ.ARGS[0],REQ.ARGS[1])
-	}
-	else {
-		_result = RE_SPLIT(REQ.ARGS[0],REQ.ARGS[1],REQ.ARGS[2])
-	}
-	
-	RES.RESULT = ARRAYSIZE(_result)
-	_result = RE_GETSTR()
-	
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-replace
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("replace: 引数が不足しています")
-		-1
-		return
-	}
-	_count = TOINT(REQ.ARGS[3])
-	RES.RESULT = REPLACE(REQ.ARGS[0], REQ.ARGS[1], REQ.ARGS[2], _count)
-}
-
-// 第2引数の文字列の改行は\\r\\nとしてエスケープされていること
-requestlib
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("requestlib: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = REQUESTLIB(REQ.ARGS[0], REPLACE(REQ.ARGS[1], "\r\n", CRLF))
-}
-
-rmdir
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("rmdir: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = RMDIR(REQ.ARGS[0])
-}
-
-// ※修正しました
-round
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("round: 引数が不足しています")
-		-1
-		return
-	}
-	_res = TOREAL(REQ.ARGS[0])
-	RES.RESULT = ROUND(_res)
-}
-
-savevar
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("savevar: 引数が不足しています")
-		-1
-		return
-	}
-	SAVEVAR(REQ.ARGS[0])
-}
-
-setdelim
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("setdelim: 引数が不足しています")
-		-1
-		return
-	}
-	SETDELIM(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-// ※修正しました
 setlasterror
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("setlasterror: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
-	_req1 = TOINT(REQ.ARGS[0])
-	SETLASTERROR(_req1)
+	SETLASTERROR(TOINT(REQ.ARGS[0]))
 }
 
-sin
+// 数字だけの文字列は数として調べる
+gettype
 {
 	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("sin: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = SIN(_req0)
+	if ISINTSTR(REQ.ARGS[0]) == 1
+		RES.RESULT = GETTYPE(TOINT(REQ.ARGS[0]))
+	elseif ISREALSTR(REQ.ARGS[0]) == 1
+		RES.RESULT = GETTYPE(TOREAL(REQ.ARGS[0]))
+	else
+		RES.RESULT = GETTYPE(REQ.ARGS[0])
 }
 
-// Result: 分割数
-// Value[0..n]: 分割された文字列
-split
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("split: 引数が不足しています")
-		-1
-		return
-	}
-	_result = SPLIT(REQ.ARGS)
-	RES.RESULT = ARRAYSIZE(_result)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-		LOGGING(EVAL("RES.VALUE%(_i)"))
-	}
-}
-
-// Result: 分割数
-// Value0: ドライブ部分
-// Value1: ディレクトリ部分
-// Value2: ファイルベース名部分
-// Value3: 拡張子部分
-splitpath
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("splitpath: 引数が不足しています")
-		-1
-		return
-	}
-	_result    = SPLITPATH(REQ.ARGS[0])
-	RES.RESULT = ARRAYSIZE(_result)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-sqrt
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("sqrt: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = SQRT(REQ.ARGS[0])
-}
-
-// 関数の引数は汎用配列
-strform
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strform: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = STRFORM(REQ.ARGS)
-}
-
-strlen
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strlen: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = STRLEN(REQ.ARGS[0])
-}
-
-// ※修正しました
-strstr
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("strstr: 引数が不足しています")
-		-1
-		return
-	}
-	_req2 = TOINT(REQ.ARGS[2])
-	RES.RESULT = STRSTR(REQ.ARGS[0], REQ.ARGS[1], _req2)
-}
-
-// ※修正しました
-substr
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("substr: 引数が不足しています")
-		-1
-		return
-	}
-	_req1=TOINT(REQ.ARGS[1])
-	_req2=TOINT(REQ.ARGS[2])
-	RES.RESULT = SUBSTR(REQ.ARGS[0], _req1, _req2)
-}
-
-// ※修正しました
-tan
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tan: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = TAN(_req0)
-}
-
-tobinstr
-{
-	RES.RESULT = TOBINSTR(TOINT(REQ.ARGS[0]))
-}
-
-tohexstr
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tohexstr: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = TOHEXSTR(TOINT(REQ.ARGS[0]))
-}
-
-// 再び文字列で戻るので意味なし
-toint
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toint: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = TOINT(REQ.ARGS[0])
-}
-
-tolower
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tolower: 引数が不足しています")
-		-1
-		return
-	}
-	elseif ARRAYSIZE(REQ.ARGS) == 1 {
-		RES.RESULT = TOLOWER(REQ.ARGS[0])
-	}
-	else {
-		RES.RESULT = TOLOWER(REQ.ARGS[0], REQ.ARGS[1])
-	}
-}
-
-// 再び文字列で戻るので意味なし
-toreal
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toreal: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = TOREAL(REQ.ARGS[0])
-}
-
-// 元々文字列なので意味なし
-tostr
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tostr: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = TOSTR(REQ.ARGS[0])
-}
-
-toupper
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toupper: 引数が不足しています")
-		-1
-		return
-	}
-	elseif ARRAYSIZE(REQ.ARGS) == 1 {
-		RES.RESULT = TOUPPER(REQ.ARGS[0])
-	}
-	else {
-		RES.RESULT = TOUPPER(REQ.ARGS[0], REQ.ARGS[1])
-	}
-}
-
-unloadlib
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("unloadlib: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = UNLOADLIB(REQ.ARGS[0])
-}
-
-
-// ------ ※以下新規追加分 -----------
-
-
-/**
- *	Value0: ARCHIV アーカイブファイル、またはアーカイブディレクトリ。
- *	Value1: COMPRESSED 圧縮ファイル、または圧縮ディレクトリ。
- *	Value2: DIRECTORY ディレクトリ。
- *	Value3: HIDDEN 隠しファイルまたは隠しディレクトリ。
- *	Value4: NORMAL 属性なし。
- *	Value5: OFFLINE このファイルのデータは、今すぐは利用不能。
- *	Value6: READONLY 読み取り専用ファイル。
- *	Value7: SYSTEM Windowsが使用するファイル。
- *	Value8: TEMP 一時ファイル。
- */
-fattrib
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("fattrib: 引数が不足しています")
-		-1
-		return
-	}
-	
-	_result = FATTRIB(REQ.ARGS[0])
-	RES.RESULT = _result
-	
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-
-}
-
-// ------ ※以下YAYA新規追加分 -----------
-
-bitwise_or
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_or: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOINT(REQ.ARGS[0])
-	_req1 = TOINT(REQ.ARGS[1])
-	RES.RESULT = BITWISE_OR(_req0,_req1)
-}
-
-bitwise_and
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_and: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOINT(REQ.ARGS[0])
-	_req1 = TOINT(REQ.ARGS[1])
-	RES.RESULT = BITWISE_AND(_req0,_req1)
-}
-
-bitwise_xor
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_xor: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOINT(REQ.ARGS[0])
-	_req1 = TOINT(REQ.ARGS[1])
-	RES.RESULT = BITWISE_XOR(_req0,_req1)
-}
-
-bitwise_not
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("bitwise_not: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOINT(REQ.ARGS[0])
-	RES.RESULT = BITWISE_NOT(_req0)
-}
-
-bitwise_shift
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("bitwise_shift: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOINT(REQ.ARGS[0])
-	_req1 = TOINT(REQ.ARGS[1])
-	RES.RESULT = BITWISE_SHIFT(_req0,_req1)
-}
-
-charsetlibex
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("charsetlibex: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = CHARSETLIBEX(REQ.ARGS[0],REQ.ARGS[1])
-}
-
-cosh
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cosh: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = COSH(REQ.ARGS[0])
-}
-
-// 動作しない
-cvauto
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvauto: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = CVAUTO(REQ.ARGS[0])
-}
-
-cvautoex
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("cvautoex: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = CVAUTOEX(REQ.ARGS[0])
-}
-
-execute
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("execute: 引数が不足しています")
-		-1
-		return
-	}
-	elseif REQ.ARGS[1]!="" {
-		RES.RESULT = EXECUTE(REQ.ARGS[0],REQ.ARGS[1])
-	}
-	else {
-		RES.RESULT = EXECUTE(REQ.ARGS[0])
-	}
-}
-
-fdigest
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fdigest: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = FDIGEST(REQ.ARGS[0],REQ.ARGS[1])
-}
-
-freadbin
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("freadbin: 引数が不足しています")
-		-1
-		return
-	}
-
-	if REQ.ARGS[2]=="" {
-		_req1=TOINT(REQ.ARGS[1])
-		RES.RESULT = FREADBIN(REQ.ARGS[0],_req1)
-	}
-	else {
-		_req1=TOINT(REQ.ARGS[1])
-		RES.RESULT = FREADBIN(REQ.ARGS[0],_req1,REQ.ARGS[2])
-	}
-}
-
-fwritebin
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwritebin: 引数が不足しています")
-		-1
-		return
-	}
-
-	if REQ.ARGS[2]=="" {
-		_req1=TOINT(REQ.ARGS[1])
-		RES.RESULT = FWRITEBIN(REQ.ARGS[0],_req1)
-	}
-	else {
-		_req1=TOINT(REQ.ARGS[1])
-		RES.RESULT = FWRITEBIN(REQ.ARGS[0],_req1,REQ.ARGS[2])
-	}
-}
-
-//　多分使う意味無し。
-getcallstack
-{
-	_result = GETCALLSTACK
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-getenv
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getenv: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = GETENV(REQ.ARGS[0])
-}
-
-getfunclist
-{
-	if REQ.ARGS[0]="" {
-		_result = GETFUNCLIST()
-		for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-			LETTONAME("RES.VALUE%(_i)", _result[_i])
-		}
-	}
-	else {
-		_result = GETFUNCLIST(REQ.ARGS[0])
-		for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-			LETTONAME("RES.VALUE%(_i)", _result[_i])
-		}
-	}
-}
-
-getsystemfunclist
-{
-	if REQ.ARGS[0]="" {
-		_result = GETSYSTEMFUNCLIST()
-		for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-			LETTONAME("RES.VALUE%(_i)", _result[_i])
-		}
-	}
-	else {
-		_result = GETSYSTEMFUNCLIST(REQ.ARGS[0])
-		for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-			LETTONAME("RES.VALUE%(_i)", _result[_i])
-		}
-	}
-}
-
-getfuncinfo
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("getfuncinfo: 引数が不足しています")
-		-1
-		return
-	}
-	_result = GETFUNCINFO(REQ.ARGS[0])
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
+// 第4引数(曜日)は常に 0 を渡す。各引数は空だと 0 になる
 getseccount
 {
 	_req0 = TOAUTO(REQ.ARGS[0])
@@ -1329,44 +273,7 @@ getseccount
 	RES.RESULT = GETSECCOUNT(_req0,_req1,_req2,_req3,_req4,_req5,_req6)
 }
 
-getstrurldecode
-{
-	strdecode()
-	return
-}
-
-getstrurlencode
-{
-	strencode()
-	return
-}
-
-han2zen
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("han2zen: 引数が不足しています")
-		-1
-		return
-	}
-
-	if REQ.ARGS[1]==""  {
-		RES.RESULT = HAN2ZEN(REQ.ARGS[0])
-	}
-	else {
-		RES.RESULT = HAN2ZEN(REQ.ARGS[0],REQ.ARGS[1])
-	}
-}
-
-processglobaldefine
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("processglobaldefine: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = PROCESSGLOBALDEFINE(REQ.ARGS[0])
-}
-
+// Result は空でない行の数、Value0..n は各行(空行は数えない)
 readfmo
 {
 	_r = ''
@@ -1390,512 +297,11 @@ readfmo
 	RES.RESULT = _c
 }
 
-restorevar
-{
-	if REQ.ARGS[0]==""  {
-		RES.RESULT = RESTOREVAR
-	}
-	else {
-		RES.RESULT = RESTOREVAR(REQ.ARGS[0])
-	}
-}
-
-sinh
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("sinh: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = SINH(_req0)
-}
-
-tanh
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("tanh: 引数が不足しています")
-		-1
-		return
-	}
-	_req0 = TOREAL(REQ.ARGS[0])
-	RES.RESULT = TANH(_req0)
-}
-
-//　多分ほぼ使う意味なし
-toauto
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toauto: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = TOAUTO(REQ.ARGS[0])
-}
-
-toautoex
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("toautoex: 引数が不足しています")
-		-1
-		return
-	}
-	RES.RESULT = TOAUTOEX(REQ.ARGS[0])
-}
-
-zen2han
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("zen2han: 引数が不足しています")
-		-1
-		return
-	}
-
-	if REQ.ARGS[1]==""  {
-		RES.RESULT = ZEN2HAN(REQ.ARGS[0])
-	}
-	else {
-		RES.RESULT = ZEN2HAN(REQ.ARGS[0],REQ.ARGS[1])
-	}
-}
-
-setsetting
+// 第2引数の文字列の改行は\\r\\nとしてエスケープされていること
+requestlib
 {
 	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("setsetting: 引数が不足しています")
-		-1
-		return
+		return -1
 	}
-	RES.RESULT = SETSETTING(REQ.ARGS[0],REQ.ARGS[1])
-}
-
-dumpvar {
-	DUMPVAR()
-}
-
-geterrorlog
-{
-	_result = GETERRORLOG()
-	RES.RESULT = ARRAYSIZE(_result)//とりあえずエラーログの個数を返すことにする
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-		LOGGING(EVAL("RES.VALUE%(_i)"))
-	}
-}
-
-dicload
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("dicload: 引数が不足しています")
-		-1
-		return
-	}
-
-	if REQ.ARGS[1]==""  {
-		RES.RESULT = DICLOAD(REQ.ARGS[0])
-	}
-	else {
-		RES.RESULT = DICLOAD(REQ.ARGS[0],REQ.ARGS[1])
-	}
-}
-
-dicunload
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("dicunload: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = DICUNLOAD(REQ.ARGS[0])
-}
-
-undefglobaldefine
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("undefglobaldefine: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = UNDEFGLOBALDEFINE(REQ.ARGS[0])
-}
-
-undeffunc
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("undeffunc: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = UNDEFFUNC(REQ.ARGS[0])
-}
-
-license {
-	_result = LICENSE()
-	RES.RESULT = TOSTR(_result)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-		LOGGING(EVAL("RES.VALUE%(_i)"))
-	}
-}
-
-// Result: 置換結果文字列
-// Value[0..n]: 対象文字列の正規表現全体にマッチした部分
-re_replaceex
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("re_replaceex: 引数が不足しています")
-		-1
-		return
-	}
-	_count = TOINT(REQ.ARGS[3])
-	RES.RESULT = RE_REPLACEEX(REQ.ARGS[0], REQ.ARGS[1], REQ.ARGS[2], _count)
-	_result = RE_GETSTR()
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-fseek
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("fseek: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = FSEEK(REQ.ARGS[0],(TOINT(REQ.ARGS[1])),REQ.ARGS[2])
-
-}
-
-ftell
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("ftell: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = FTELL(REQ.ARGS[0])
-
-}
-
-charsetidtotext
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("charsetidtotext: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = CHARSETIDTOTEXT(REQ.ARGS[0])
-
-}
-
-charsettexttoid
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("charsettexttoid: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = CHARSETTEXTTOID(REQ.ARGS[0])
-}
-
-getvarlist
-{
-
-	if REQ.ARGS[0]==""  {
-		RES.RESULT = TOSTR(GETVARLIST())
-	}
-	else {
-		RES.RESULT = TOSTR(GETVARLIST(REQ.ARGS[0]))
-	}
-	
-	_result = RES.RESULT
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-	}
-}
-
-execute_wait
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("execute_wait: 引数が不足しています")
-		-1
-		return
-	}
-	elseif REQ.ARGS[1]!="" {
-		RES.RESULT = EXECUTE_WAIT(REQ.ARGS[0],REQ.ARGS[1])
-	}
-	else {
-		RES.RESULT = EXECUTE_WAIT(REQ.ARGS[0])
-	}
-}
-
-strdecode
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strdecode: 引数が不足しています")
-		-1
-		return
-	}
-	if REQ.ARGS[1]=="" {
-		RES.RESULT = STRDECODE(REQ.ARGS[0])
-	}
-	elseif REQ.ARGS[2]=="" {
-		RES.RESULT = STRDECODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]))
-	}
-	else {
-		RES.RESULT = STRDECODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]),REQ.ARGS[2])
-	}
-}
-
-strencode
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("strencode: 引数が不足しています")
-		-1
-		return
-	}
-	if REQ.ARGS[1]=="" {
-		RES.RESULT = STRENCODE(REQ.ARGS[0])
-	}
-	elseif REQ.ARGS[2]=="" {
-		RES.RESULT = STRENCODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]))
-	}
-	else {
-		RES.RESULT = STRENCODE(REQ.ARGS[0],TOAUTO(REQ.ARGS[1]),REQ.ARGS[2])
-	}
-}
-
-re_option
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("re_option: 引数が不足しています")
-		-1
-		return
-	}
-	
-	RES.RESULT = RE_OPTION(REQ.ARGS[0])
-}
-
-freadencode
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("freadencode: 引数が不足しています")
-		-1
-		return
-	}
-	_req1=TOINT(REQ.ARGS[1])
-	if REQ.ARGS[2]=="" {
-		RES.RESULT = FREADENCODE(REQ.ARGS[0],_req1)
-	}
-	else {
-		RES.RESULT = FREADENCODE(REQ.ARGS[0],_req1,REQ.ARGS[2])
-	}
-}
-
-fwritedecode
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("fwritedecode: 引数が不足しています")
-		-1
-		return
-	}
-	if REQ.ARGS[2]=="" {
-		RES.RESULT = FWRITEDECODE(REQ.ARGS[0],REQ.ARGS[1])
-	}
-	else {
-		RES.RESULT = FWRITEDECODE(REQ.ARGS[0],REQ.ARGS[1],REQ.ARGS[2])
-	}
-}
-
-// 修正（2014.01.03）
-asort
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("asort: 引数が不足しています")
-		-1
-		return
-	}
-	
-	_option = REQ.ARGS[0]
-	REQ.ARGS[0] = IARRAY()
-	_array0 = REQ.ARGS
-
-	_array1 = ASORT(_option, _array0)
-
-	_i = 0
-	foreach _array1 ; _v {
-		LETTONAME("RES.VALUE%(_i)", _v)
-		_i ++
-	}
-	RES.RESULT = ''
-}
-
-// 追加（2014.01.04）
-translate
-{
-	if ARRAYSIZE(REQ.ARGS) < 3 {
-		LOGGING("translate: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = TRANSLATE(REQ.ARGS[0], REQ.ARGS[1], REQ.ARGS[2])
-}
-
-//Tc562-1
-isevaluable
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isevaluable: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = ISEVALUABLE(REQ.ARGS[0])
-}
-
-settamahwnd
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("settamahwnd: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = SETTAMAHWND(REQ.ARGS[0])
-}
-
-isglobaldefine
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("isglobaldefine: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = ISGLOBALDEFINE(REQ.ARGS[0])
-}
-
-setglobaldefine
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("setglobaldefine: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = SETGLOBALDEFINE(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-append_runtime_dic
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("append_runtime_dic: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = APPEND_RUNTIME_DIC(REQ.ARGS[0])
-}
-
-sleep
-{
-	if ARRAYSIZE(REQ.ARGS) < 1 {
-		LOGGING("sleep: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = SLEEP(TOINT(REQ.ARGS[0]))
-}
-
-funcdecl_read
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("funcdecl_read: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = FUNCDECL_READ(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-funcdecl_write
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("funcdecl_write: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = FUNCDECL_WRITE(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-funcdecl_erase
-{
-	if ARRAYSIZE(REQ.ARGS) < 2 {
-		LOGGING("funcdecl_erase: 引数が不足しています")
-		-1
-		return
-	}
-
-	RES.RESULT = FUNCDECL_ERASE(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-//Tc567-2
-clearerrorlog
-{
-	CLEARERRORLOG()
-}
-
-//Tc568-1
-arraydedup
-{
-	_result = ARRAYDEDUP(REQ.ARGS)
-	RES.RESULT = ARRAYSIZE(_result)
-	for _i = 0; _i < ARRAYSIZE(_result); _i++ {
-		LETTONAME("RES.VALUE%(_i)", _result[_i])
-		LOGGING(EVAL("RES.VALUE%(_i)"))
-	}
-}
-
-strdigest
-{
-	RES.RESULT = STRDIGEST(REQ.ARGS[0], REQ.ARGS[1])
-}
-
-//Tc569-1
-lint.getuserdeffuncusedby{lint.common()}
-lint.getfuncusedby{lint.common()}
-lint.getglobalvarusedby{lint.common()}
-lint.getlocalvarusedby{lint.common()}
-lint.getglobalvarletted{lint.common()}
-lint.getlocalvarletted{lint.common()}
-lint.common
-{
-	_a = EVAL(REQ.ARGUMENT0 + '(REQ.ARGS[0])')
-	_type = GETTYPEEX('_a')
-	if _type == 4 {
-		_i = 0
-		foreach _a; _v {
-			LETTONAME("RES.VALUE%(_i)", _v)
-			_i ++
-		}
-		RES.RESULT = ''
-	}
-	else {
-		RES.RESULT = _a
-	}
-}
-
-outputnum
-{
-	RES.RESULT = OUTPUTNUM(REQ.ARGS[0])
+	RES.RESULT = REQUESTLIB(REQ.ARGS[0], REPLACE(REQ.ARGS[1], "\r\n", CRLF))
 }

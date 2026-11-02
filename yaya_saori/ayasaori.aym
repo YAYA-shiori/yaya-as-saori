@@ -35,6 +35,7 @@ load
  */
 unload
 {
+	AYASAORI.ClearRequest()
 	ERASEVAR('REQ.HEADER')
 	ERASEVAR('REQ.COMMAND')
 	ERASEVAR('REQ.VERSION')
@@ -52,6 +53,7 @@ unload
 	ERASEVAR('AYASAORI.SENDER')
 	ERASEVAR('AYASAORI.VERSION')
 	ERASEVAR('AYASAORI.LOADEDCLS')
+	ERASEVAR('AYASAORI.SYSFUNCS')
 }
 
 
@@ -65,129 +67,202 @@ unload
 request
 {
 	REQ.HEADER = _argv[0]
-	_header    = SPLIT(_argv[0], CRLF)
+
+	// ヘッダ全体を PARSEHEADER で一度に解析する(CRLF と LF のどちらでもよい)
+	//   start    : リクエストライン
+	//   header   : キー → 値のハッシュ(キーの大文字小文字は区別される)
+	//   key      : ヘッダのキーの配列(出現順)
+	//   rawvalue : ヘッダの値の配列(出現順)
+	_parsed = PARSEHEADER(_argv[0])
 
 	// 不正なヘッダ
-	if ARRAYSIZE(_header) <= 1 {
-		AYASAORI.Response('400 Bad Request')
-		return
+	if GETTYPEEX('_parsed') != 5 {
+		return AYASAORI.Response(STATUS_BAD_REQUEST)
+	}
+	_requestLine = CUTSPACE(_parsed['start'])
+	if _requestLine == '' {
+		return AYASAORI.Response(STATUS_BAD_REQUEST)
 	}
 
 	// リクエストラインの分析
-	_requestLine = _header[0]
-	_header[0]   = IARRAY
-	_requestLine = CUTSPACE(_requestLine)
-
 	REQ.COMMAND  = _requestLine[0, ' SAORI']
 	REQ.VERSION  = _requestLine[1, '/']
 	REQ.PROTOCOL = 'SAORI/' + REQ.VERSION
 
+	// REQ.CHARSET, REQ.SECURITYLEVEL, REQ.SENDER, REQ.ARGUMENT0..n, REQ.ARGS を作る
+	AYASAORI.ReadHeader(_parsed)
+
+	// { } の中で初めて代入した変数は、その中でしか使えないので、外で作っておく
+	_response = ''
 	case REQ.COMMAND {
 	when 'GET Version' {
-		_charset = ''
-		foreach _header; _line {
-			if _line == ''
-				break
-			_field = SPLIT(_line, ':', 2)
-			_key   = CUTSPACE(_field[0])
-			_value = CUTSPACE(_field[1])
-			_key = TOUPPER(_key)
-			if _key == 'CHARSET' {
-				_charset = _value
-				break
-			}
-		}
-		REQ.CHARSET = _charset
+		if !ISVAR('REQ.CHARSET')
+			REQ.CHARSET = ''
 		RES.RESULT = GETSETTING('coreinfo.name') + '/' + GETSETTING('coreinfo.version')
-		AYASAORI.Response(STATUS_OK)
-		ERASEVAR('REQ.CHARSET')
-		return
+		_response = AYASAORI.Response(STATUS_OK)
 	}
 	when 'EXECUTE' {
-		foreach _header; _line {
-			if _line == ''
-				break
-			_field = SPLIT(_line, ':', 2)
-			_key   = CUTSPACE(_field[0])
-			_value = CUTSPACE(_field[1])
-
-			// 変数をセットする。大文字で統一
-			// Charset, SecurityLevel, Sender, Argument[0..n] 以外は無いはず
-			_key = TOUPPER(_key)
-			if RE_MATCH(_key, 'CHARSET|SECURITYLEVEL|SENDER|ARGUMENT[0-9]+')
-				LETTONAME("REQ.%(_key)", _value)
-		}
-
-		// externalの場合はExternalEvent.を接頭辞として明示的に付けた関数のみ有効とする
-		// コンストラクタコールも上記に合わせて設定すること
-		if TOLOWER(REQ.SECURITYLEVEL) == 'external' {
-			REQ.ARGUMENT0 = 'ExternalEvent.' + REQ.ARGUMENT0
-		}
-
-		// ユーザ関数のみ処理対象とする
-		_result = 0
-		if ISFUNC(REQ.ARGUMENT0) == FUNC_USER || ISFUNC(REQ.ARGUMENT0) == FUNC_BUILTIN {
-			// ループ操作の簡易化のために、REQ.ARGS配列を作る
-			REQ.ARGS = IARRAY()
-			// Argument0 はメソッド(または関数名)なので飛ばす
-			_i = 1
-			while ISVAR("REQ.ARGUMENT%(_i)") {
-				REQ.ARGS ,= EVAL("REQ.ARGUMENT%(_i)")
-				_i++
-			}
-
-			// コンストラクタコール
-			if STRSTR(REQ.ARGUMENT0, '.', 0) != -1 {
-				_tmp = SPLIT(REQ.ARGUMENT0, '.', 2)
-				_cls = _tmp[0]
-				_mth = _tmp[1]
-				if _mth == 'Load' {
-					AYASAORI.LOADEDCLS ,= _cls
-				} else {
-					if ASEARCH(_cls, AYASAORI.LOADEDCLS) < 0 {
-						_func = "%(_cls).Load"
-						// モジュールロードの実行
-						if ISFUNC(_func) {
-							void EVAL(_func)
-						}
-						AYASAORI.LOADEDCLS ,= _cls
-					}
-				}
-			}
-
-			// 関数実行
-			if ISFUNC(REQ.ARGUMENT0) == FUNC_BUILTIN
-				_result = EVAL(TOLOWER(REQ.ARGUMENT0))
-			else
-				_result = EVAL(REQ.ARGUMENT0)
-		} else {
-			AYASAORI.Response(STATUS_NO_CONTENT)
-			return
-		}
-
-		if _result == -1 {
-			AYASAORI.Response(STATUS_BAD_REQUEST)
-		} else {
-			// レスポンスの作成
-			AYASAORI.Response(STATUS_OK)
-		}
-		// 変数の後始末
-		ERASEVAR('REQ.SECURITYLEVEL')
-		ERASEVAR('REQ.CHARSET')
-		ERASEVAR('REQ.SENDER')
-		ERASEVAR('REQ.ARGS')
-		_i = 0
-		while ISVAR("REQ.ARGUMENT%(_i)") {
-			ERASEVAR("REQ.ARGUMENT%(_i)")
-			_i++
-		}
+		_response = AYASAORI.Execute()
 	}
 	// 未知のリクエスト
 	others {
-		AYASAORI.Response(STATUS_BAD_REQUEST)
-		return
+		_response = AYASAORI.Response(STATUS_BAD_REQUEST)
 	}
 	}
+
+	AYASAORI.ClearRequest()
+	return _response
+}
+
+
+/**	PARSEHEADER の結果から、リクエストの変数を作る
+ *	  REQ.CHARSET, REQ.SECURITYLEVEL, REQ.SENDER, REQ.ARGUMENT0..n : 値の前後の空白を取り除いたもの
+ *	  REQ.ARGS : Argument1.. の配列(Argument0 は関数名なので含めない)。途切れた番号より先は含めない
+ *	値の空白をそのまま渡したいときは、下の CUTSPACE を外す(PARSEHEADER は ": " の後ろをそのまま返す)
+ *
+ *	@param	hash	_argv[0] PARSEHEADER の結果
+ */
+AYASAORI.ReadHeader
+{
+	_parsed = _argv[0]
+	_header = _parsed['header']
+	_found  = 0
+
+	// 正しい綴りのキーは、ハッシュから直接取る(これが普通のリクエスト)
+	foreach 'Charset', 'SecurityLevel', 'Sender'; _name {
+		if HASH_EXIST(_name, _header) {
+			LETTONAME("REQ.%(TOUPPER(_name))", CUTSPACE(_header[_name]))
+			_found += 1
+		}
+	}
+	REQ.ARGS = IARRAY()
+	_i = 0
+	while HASH_EXIST("Argument%(_i)", _header) {
+		_value = CUTSPACE(_header["Argument%(_i)"])
+		LETTONAME("REQ.ARGUMENT%(_i)", _value)
+		if _i > 0
+			REQ.ARGS ,= _value
+		_i++
+	}
+	_found += _i
+
+	// 取れなかったキーがあるとき(大文字小文字が違う、同じキーが複数ある、番号が飛んでいる、
+	// 知らないキーがある)だけ、全部のキーを大文字にして調べ直す
+	if _found < ARRAYSIZE(_parsed['key']) {
+		_keys   = _parsed['key']
+		_values = _parsed['rawvalue']
+		_count  = ARRAYSIZE(_keys)
+		for _i = 0; _i < _count; _i++ {
+			_key = TOUPPER(_keys[_i])
+			if RE_MATCH(_key, 'CHARSET|SECURITYLEVEL|SENDER|ARGUMENT[0-9]+') {
+				LETTONAME("REQ.%(_key)", CUTSPACE(_values[_i]))
+			}
+		}
+		REQ.ARGS = IARRAY()
+		_i = 1
+		while ISVAR("REQ.ARGUMENT%(_i)") {
+			REQ.ARGS ,= EVAL("REQ.ARGUMENT%(_i)")
+			_i++
+		}
+	}
+	return
+}
+
+
+/**	EXECUTE を処理する
+ *	REQ.ARGUMENT0 の関数を呼び出し、レスポンスヘッダを返す
+ *
+ *	@return	string   レスポンスヘッダ文字列
+ */
+AYASAORI.Execute
+{
+	// externalの場合はExternalEvent.を接頭辞として明示的に付けた関数のみ有効とする
+	// コンストラクタコールも上記に合わせて設定すること
+	if TOLOWER(REQ.SECURITYLEVEL) == 'external' {
+		REQ.ARGUMENT0 = 'ExternalEvent.' + REQ.ARGUMENT0
+	}
+
+	// 呼び出す関数を決める。ユーザ関数と本体のシステム関数だけが対象
+	_name = REQ.ARGUMENT0
+	_kind = ISFUNC(_name)
+	if _kind == FUNC_UNDEFIND {
+		// 大文字小文字の違う本体関数名(strlen → STRLEN)
+		_found = AYASAORI.FindBuiltin(_name)
+		if _found != '' {
+			_name = _found
+			_kind = FUNC_BUILTIN
+		}
+	}
+	if _kind != FUNC_USER && _kind != FUNC_BUILTIN {
+		return AYASAORI.Response(STATUS_NO_CONTENT)
+	}
+
+	// コンストラクタコール
+	if STRSTR(REQ.ARGUMENT0, '.', 0) != -1 {
+		_tmp = SPLIT(REQ.ARGUMENT0, '.', 2)
+		_cls = _tmp[0]
+		_mth = _tmp[1]
+		if _mth == 'Load' {
+			AYASAORI.LOADEDCLS ,= _cls
+		} else {
+			if ASEARCH(_cls, AYASAORI.LOADEDCLS) < 0 {
+				_func = "%(_cls).Load"
+				// モジュールロードの実行
+				if ISFUNC(_func) {
+					void EVAL(_func)
+				}
+				AYASAORI.LOADEDCLS ,= _cls
+			}
+		}
+	}
+
+	// 関数実行
+	_result = 0
+	if _kind == FUNC_BUILTIN
+		_result = AYASAORI.CallBuiltin(_name)
+	else
+		_result = EVAL(_name)
+
+	if _result == -1
+		return AYASAORI.Response(STATUS_BAD_REQUEST)
+	return AYASAORI.Response(STATUS_OK)
+}
+
+
+/**	大文字小文字を区別せずに本体のシステム関数を探す
+ *	初回に GETSYSTEMFUNCLIST から表を作る
+ *
+ *	@param	string	_argv[0] 関数名
+ *	@return	string	本体の関数名。無ければ空
+ */
+AYASAORI.FindBuiltin
+{
+	if !ISVAR('AYASAORI.SYSFUNCS') {
+		AYASAORI.SYSFUNCS = IHASH()
+		_list = GETSYSTEMFUNCLIST()
+		foreach _list; _func {
+			AYASAORI.SYSFUNCS[TOUPPER(_func)] = _func
+		}
+	}
+	return AYASAORI.SYSFUNCS[TOUPPER(_argv[0])]
+}
+
+
+/**	リクエストの REQ.* を消す
+ *	REQ.HEADER, REQ.COMMAND, REQ.VERSION, REQ.PROTOCOL は次のリクエストで上書きされる
+ */
+AYASAORI.ClearRequest
+{
+	ERASEVAR('REQ.CHARSET')
+	ERASEVAR('REQ.SECURITYLEVEL')
+	ERASEVAR('REQ.SENDER')
+	ERASEVAR('REQ.ARGS')
+	_i = 0
+	while ISVAR("REQ.ARGUMENT%(_i)") {
+		ERASEVAR("REQ.ARGUMENT%(_i)")
+		_i++
+	}
+	return
 }
 
 
